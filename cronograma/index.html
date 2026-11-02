@@ -309,9 +309,9 @@ const fmtShort=s=>{const d=D(s);return pad(d.getDate())+"/"+pad(d.getMonth()+1)}
 function toast(t){const el=document.getElementById("toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2600)}
 
 /* ================= conteúdo ================= */
-const START="2026-11-02", END="2028-12-31";
+const START="2026-11-03", END="2028-12-31";
 const FASES=[
- {id:"f0",nome:"Reconhecimento",ini:"2026-11-02",fim:"2027-01-10",banca:"FCC (DPE-SP)",per:"nov/26 – jan/27"},
+ {id:"f0",nome:"Reconhecimento",ini:"2026-11-03",fim:"2027-01-10",banca:"FCC (DPE-SP)",per:"nov/26 – jan/27"},
  {id:"f1",nome:"Base",ini:"2027-01-11",fim:"2027-06-30",banca:"Fundep (DPE-MG)",per:"jan – jun/27"},
  {id:"f2",nome:"Construção",ini:"2027-07-01",fim:"2028-03-31",banca:"Fundep (DPE-MG)",per:"jul/27 – mar/28"},
  {id:"f3",nome:"Aprovação",ini:"2028-04-01",fim:"2028-12-31",banca:"Fundep (DPE-MG)",per:"abr – dez/28"}];
@@ -750,7 +750,7 @@ function renderInicio(){
     <section class="panel hello">
       <span class="k">${esc(fase.nome)} · ${esc(fase.per)}</span>
       <h2 style="margin-top:8px">${sauda}, <em>João</em>.</h2>
-      <p class="date">${fmtLong(t)}${inicio?" · o plano começa amanhã, segunda-feira, 02/11":""}</p>
+      <p class="date">${fmtLong(t)}${inicio?" · o plano começa "+(diffDays(t,START)===1?"amanhã, ":"em ")+SEM[dow(START)]+", "+fmtShort(START):""}</p>
       <div class="next3">${itens.filter(i=>i.tipo!=="cartoes").slice(0,4).map(i=>`<div class="mini" style="--mc:${mc(i.m)}"><span class="h">${i.h}</span><span class="t"><span class="dotm" style="--mc:${mc(i.m)};margin-right:6px"></span>${esc(i.t)}<small>${esc(i.tag)}</small></span><span>${dn[i.id]?'<span class="pill" style="color:var(--ok)">feito</span>':""}</span></div>`).join("")}</div>
       <div class="row" style="margin-top:14px"><a class="btn primary" href="#hoje" data-go="${inicio?START:t}">Abrir ${inicio?"o primeiro dia":"o dia de hoje"}</a><a class="btn" href="#cronograma">Ver o cronograma</a></div>
     </section>
@@ -776,7 +776,7 @@ function renderInicio(){
 function lineHtml(l){return `<div class="ln"><b>${esc(l[0])}</b><span>${esc(l[1])}</span></div>`}
 function renderHoje(){
   const s=dia||todayIso(); const P=PLAN[s];
-  if(!P){document.getElementById("view").innerHTML=`<div class="head"><div><h2>Fora do plano</h2><p>O plano vai de 02/11/2026 a 31/12/2028.</p></div></div><button class="btn" data-go="${START}">Ir para o primeiro dia</button>`;return}
+  if(!P){document.getElementById("view").innerHTML=`<div class="head"><div><h2>Fora do plano</h2><p>O plano vai de 03/11/2026 a 31/12/2028.</p></div></div><button class="btn" data-go="${START}">Ir para o primeiro dia</button>`;return}
   const dn=doneOf(s), pct=pctDia(s), items=P.items.map(i=>resolveItem(s,i));
   const revs=revisoesDe(s);
   const tops=semanaTopicos(s);
@@ -848,7 +848,7 @@ function renderCrono(){
   const fNow=faseDe(t<START?START:t).id;
   const prev=iso(new Date(Y,M-2,1,12)).slice(0,7), next=iso(new Date(Y,M,1,12)).slice(0,7);
   document.getElementById("view").innerHTML=`
-  <div class="head"><div><h2>Cronograma</h2><p>Todos os dias de 02/11/2026 a 31/12/2028 já estão montados. Toque num dia para ver o que estudar, as questões e a leitura.</p></div>
+  <div class="head"><div><h2>Cronograma</h2><p>Todos os dias de 03/11/2026 a 31/12/2028 já estão montados. Toque num dia para ver o que estudar, as questões e a leitura.</p></div>
    <div class="daynav"><button class="x" type="button" data-mes="${prev}" aria-label="Mês anterior">‹</button><span class="daytitle" style="font-size:24px;min-width:9ch;text-align:center">${MESES[M-1]} ${Y}</span><button class="x" type="button" data-mes="${next}" aria-label="Próximo mês">›</button></div></div>
   <div class="phasebar">${FASES.map(f=>`<div class="${f.id===fNow?"now":""}"><span class="k">${f.per}</span><b>${f.nome}</b><small>banca de referência: ${f.banca}</small></div>`).join("")}</div>
   <div class="legend">${["inst","dh","const","adm","penpp","civ","eca","filo"].map(m=>`<span><i class="dotm" style="--mc:${mc(m)}"></i>${MAT[m].n}${m==="penpp"?" e Execução":m==="civ"?", Processo Civil, Difusos e Consumidor":""}</span>`).join("")}</div>
@@ -959,7 +959,7 @@ function renderDesempenho(){
    ${ms.length?`<div class="bars" style="margin-top:12px">${ms.map(m=>{const p=st[m].f?Math.round(st[m].a/st[m].f*100):0;return `<div class="bar" style="--mc:${mc(m)}"><span>${esc(MAT[m]?MAT[m].n:m)}</span><span class="tr"><i style="width:${p}%"></i></span><span class="n">${p}% · ${st[m].a}/${st[m].f}</span></div>`}).join("")}</div>`:`<div class="empty" style="margin-top:12px"><strong>Sem questões ainda</strong>Gere as questões do bloco do dia e responda por aqui.</div>`}
    <p class="note" style="margin-top:12px">Prioridade atual de reforço: ${fr.map(m=>MAT[m].n).join(", ")}.</p></section>
   <section class="panel"><h3>Constância</h3><p class="sub">Cada quadrado é um dia do plano até hoje; quanto mais escuro, mais itens cumpridos.</p>
-   <div class="heat" style="margin-top:12px">${heatDays.map(s=>{const p=pctDia(s);return `<i class="${p>=75?"l3":p>=40?"l2":p>0?"l1":""}" title="${fmtShort(s)}: ${p}%"></i>`}).join("")||'<span class="note">O plano começa em 02/11/2026.</span>'}</div></section>`;
+   <div class="heat" style="margin-top:12px">${heatDays.map(s=>{const p=pctDia(s);return `<i class="${p>=75?"l3":p>=40?"l2":p>0?"l1":""}" title="${fmtShort(s)}: ${p}%"></i>`}).join("")||'<span class="note">O plano começa em 03/11/2026.</span>'}</div></section>`;
 }
 
 /* ================= render: alvos e método ================= */
