@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#13201A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Defensoria">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<title>Autos da Defensoria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<style>
+/* Layout: app de estudo com barra lateral (vira faixa no celular). Mesma família visual da Biblioteca D'Ávila: verde-tinta, latão, Bodoni nos números. Cada dia é uma "folha" dos autos com os itens em ordem de horário. */
+:root{
+  --paper:#F1F3EE; --card:#FAFBF7; --ink:#17201B; --muted:#5D6962; --faint:#8C978F; --rule:#D6DCD4;
+  --accent:#1D5A43; --accent-ink:#F4F8F4; --accent-soft:#DCEAE2; --brass:#946E1F; --brass-soft:#EDE3CC;
+  --side:#13201A; --side-ink:#DCE5DF; --side-muted:#8FA198; --side-hi:#22362C;
+  --ok:#2F7A52; --bad:#A6402F; --warn:#9A6A12;
+  --m-inst:#1D5A43; --m-dh:#6E3F78; --m-const:#2F5A8A; --m-adm:#8A6A14; --m-pen:#8A3A2C; --m-civ:#2D6B60; --m-eca:#9A4F6A; --m-filo:#4E5A70; --m-mix:#5D6962;
+  --f-display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
+  --f-ui:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --shadow:0 1px 0 rgba(20,30,25,.05),0 8px 24px -14px rgba(20,30,25,.3);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0E1411; --card:#151D19; --ink:#E3E8E1; --muted:#97A49B; --faint:#6C786F; --rule:#27322C;
+  --accent:#67BE96; --accent-ink:#0B1410; --accent-soft:#18291F; --brass:#D4AC57; --brass-soft:#2B2618;
+  --side:#0A0F0C; --side-ink:#DCE5DF; --side-muted:#7F9187; --side-hi:#18241E;
+  --ok:#6CC08F; --bad:#E58A79; --warn:#E0B060;
+  --m-inst:#67BE96; --m-dh:#C08ACB; --m-const:#7FB0E0; --m-adm:#D9B95C; --m-pen:#E08B77; --m-civ:#6FC2B2; --m-eca:#E596B4; --m-filo:#A3B0C8; --m-mix:#97A49B;
+  --shadow:0 1px 0 rgba(0,0,0,.3),0 10px 28px -14px rgba(0,0,0,.7); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E1411; --card:#151D19; --ink:#E3E8E1; --muted:#97A49B; --faint:#6C786F; --rule:#27322C;
+  --accent:#67BE96; --accent-ink:#0B1410; --accent-soft:#18291F; --brass:#D4AC57; --brass-soft:#2B2618;
+  --side:#0A0F0C; --side-ink:#DCE5DF; --side-muted:#7F9187; --side-hi:#18241E;
+  --ok:#6CC08F; --bad:#E58A79; --warn:#E0B060;
+  --m-inst:#67BE96; --m-dh:#C08ACB; --m-const:#7FB0E0; --m-adm:#D9B95C; --m-pen:#E08B77; --m-civ:#6FC2B2; --m-eca:#E596B4; --m-filo:#A3B0C8; --m-mix:#97A49B;
+  --shadow:0 1px 0 rgba(0,0,0,.3),0 10px 28px -14px rgba(0,0,0,.7); color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font:15px/1.55 var(--f-ui);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.k{font:500 11px/1.2 var(--f-mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+a{color:var(--accent)}
+
+/* shell */
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100%}
+.side{background:var(--side);color:var(--side-ink);padding:22px 14px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:18px}
+.brand{padding:0 8px}
+.brand .ex{font:500 10px/1 var(--f-mono);letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
+.brand h1{font:700 24px/1.05 var(--f-display);margin-top:6px}
+.brand h1 em{font-style:italic;font-weight:500;color:var(--accent)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav .grp{font:500 10px var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--side-muted);padding:12px 10px 4px}
+.nav a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:var(--side-ink);text-decoration:none;font-weight:500;font-size:14px}
+.nav a:hover{background:var(--side-hi)}
+.nav a[aria-current="page"]{background:var(--side-hi);color:#fff;box-shadow:inset 3px 0 0 var(--brass)}
+.nav svg{width:16px;height:16px;flex:none;opacity:.8}
+.nav .badge{margin-left:auto;font:500 11px var(--f-mono);background:var(--brass);color:#1a1405;border-radius:999px;padding:1px 7px}
+.side .foot{margin-top:auto;padding:12px 10px;border-top:1px solid var(--side-hi);font-size:12.5px;color:var(--side-muted)}
+.side .foot b{display:block;font:700 30px/1 var(--f-display);color:#fff;margin-bottom:2px}
+.main{min-width:0;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-block:26px 80px}
+.view{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .side{position:sticky;top:0;height:auto;z-index:20;flex-direction:row;align-items:center;padding:10px max(12px,env(safe-area-inset-left,0px));gap:10px;overflow-x:auto;overflow-y:hidden;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+  .brand{display:none}.side .foot{display:none}
+  .nav{flex-direction:row;gap:4px}.nav .grp{display:none}
+  .nav a{white-space:nowrap;padding:7px 10px;font-size:13px}
+  .nav a[aria-current="page"]{box-shadow:inset 0 -2px 0 var(--brass)}
+  .main{padding-block:18px 80px}
+}
+
+/* generic */
+.head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px}
+.head h2{font:700 clamp(28px,4.4vw,42px)/1.05 var(--f-display)}
+.head p{color:var(--muted);margin-top:6px;max-width:62ch}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:18px 20px;min-width:0}
+.panel h3{font:600 16px/1.3 var(--f-ui)}
+.panel .sub{color:var(--muted);font-size:13.5px;margin-top:2px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.stat .v{font:700 34px/1.05 var(--f-display);font-variant-numeric:lining-nums tabular-nums;margin-top:6px}
+.stat .s{color:var(--muted);font-size:13px}
+.btn{border:1px solid var(--rule);background:var(--card);border-radius:8px;padding:8px 13px;font-weight:600;font-size:14px;display:inline-flex;align-items:center;gap:7px;line-height:1.2}
+.btn:hover{border-color:var(--faint)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.brass{background:var(--brass);color:#1a1405;border-color:var(--brass)}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.55;cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;font:500 11.5px var(--f-mono);padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.dotm{width:9px;height:9px;border-radius:50%;background:var(--mc,var(--m-mix));flex:none;display:inline-block}
+.muted{color:var(--muted)}
+.empty{border:1px dashed var(--rule);border-radius:12px;padding:24px;text-align:center;color:var(--muted)}
+.empty strong{display:block;color:var(--ink);font:700 19px var(--f-display);margin-bottom:4px}
+.note{font-size:13px;color:var(--muted)}
+.inp{width:100%;padding:9px 11px;border:1px solid var(--rule);border-radius:8px;background:var(--paper)}
+textarea.inp{min-height:160px;resize:vertical;line-height:1.55}
+select.inp{width:auto}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:8px;font-size:14px;z-index:60;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.conn{font-size:12.5px;color:var(--muted)}
+
+/* início */
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hello h2{font:700 clamp(30px,5vw,46px)/1.05 var(--f-display)}
+.hello h2 em{font-style:italic;font-weight:500;color:var(--accent)}
+.hello .date{color:var(--muted);margin-top:6px}
+.flip{display:flex;gap:6px;align-items:flex-end;margin-top:10px;flex-wrap:wrap}
+.flip span{font:700 40px/1 var(--f-display);background:var(--ink);color:var(--paper);padding:8px 10px;border-radius:6px;min-width:44px;text-align:center;font-variant-numeric:tabular-nums lining-nums}
+.flip small{font:500 11px var(--f-mono);color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-left:6px;align-self:center}
+.next3{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.mini{display:grid;grid-template-columns:54px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule)}
+.mini:last-child{border-bottom:0}
+.mini .h{font:500 12px var(--f-mono);color:var(--muted)}
+.mini .t{font-weight:600;min-width:0}
+.mini .t small{display:block;color:var(--muted);font-weight:400;font-size:13px}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.wd{border:1px solid var(--rule);border-radius:8px;padding:8px;background:var(--paper);min-width:0;text-align:left}
+.wd.today{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass)}
+.wd .n{font:500 11px var(--f-mono);color:var(--muted)}
+.wd .d{font:700 20px var(--f-display)}
+.wd .chips{display:flex;gap:3px;margin-top:6px;flex-wrap:wrap}
+.wd .chips i{width:8px;height:8px;border-radius:2px;background:var(--mc)}
+.wd .bar{height:3px;background:var(--rule);border-radius:2px;margin-top:6px;overflow:hidden}
+.wd .bar b{display:block;height:100%;background:var(--accent)}
+
+/* hoje */
+.daynav{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.daynav .x{border:1px solid var(--rule);background:var(--card);border-radius:8px;width:36px;height:36px;display:grid;place-items:center}
+.daytitle{font:700 clamp(26px,4vw,38px)/1.1 var(--f-display)}
+.dayprog{display:flex;align-items:center;gap:12px}
+.ring{--p:0;width:58px;height:58px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--rule) 0);display:grid;place-items:center;flex:none}
+.ring span{width:46px;height:46px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font:600 13px var(--f-mono)}
+.items{display:flex;flex-direction:column;gap:10px}
+.item{display:grid;grid-template-columns:64px minmax(0,1fr);gap:14px;background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--mc,var(--rule));border-radius:10px;padding:14px 16px}
+.item.done{opacity:.72}
+.item.done .it-title{text-decoration:line-through;text-decoration-color:var(--faint)}
+.item .hr{font:500 12.5px var(--f-mono);color:var(--muted);padding-top:2px}
+.item .hr small{display:block;font-size:11px;color:var(--faint)}
+.it-top{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.it-tag{font:500 10.5px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--mc,var(--muted))}
+.it-title{font:600 16.5px/1.3 var(--f-ui);margin-top:2px}
+.it-body{margin-top:8px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.it-body .ln{display:grid;grid-template-columns:86px minmax(0,1fr);gap:8px}
+.it-body .ln b{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding-top:3px}
+.chk{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--rule);border-radius:999px;padding:5px 12px 5px 8px;background:var(--paper);font-size:13px;font-weight:600}
+.chk input{width:16px;height:16px;accent-color:var(--accent);margin:0}
+.it-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.prompt{font:13px/1.5 var(--f-mono);background:var(--paper);border:1px dashed var(--rule);border-radius:8px;padding:10px 12px;white-space:pre-wrap;word-break:break-word}
+@media (max-width:560px){.item{grid-template-columns:minmax(0,1fr)}.item .hr{display:flex;gap:8px}.it-body .ln{grid-template-columns:minmax(0,1fr)}}
+
+/* quiz */
+.quiz{margin-top:12px;border-top:1px solid var(--rule);padding-top:12px;display:flex;flex-direction:column;gap:14px}
+.q{display:flex;flex-direction:column;gap:8px}
+.q .en{font-weight:600}
+.q .en small{font:500 11px var(--f-mono);color:var(--muted);display:block;margin-bottom:2px}
+.alt{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;text-align:left;border:1px solid var(--rule);background:var(--paper);border-radius:8px;padding:8px 10px;font-size:14px;line-height:1.45}
+.alt b{font:600 13px var(--f-mono)}
+.alt:hover{border-color:var(--faint)}
+.alt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,var(--paper))}
+.alt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--paper))}
+.alt[disabled]{cursor:default}
+.expl{font-size:13.5px;border-left:3px solid var(--brass);padding:4px 0 4px 10px;color:var(--ink)}
+.expl b{font:500 11px var(--f-mono);color:var(--brass);text-transform:uppercase;letter-spacing:.08em}
+.score{font:700 22px var(--f-display)}
+.thinking{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}
+.spin{width:16px;height:16px;border:2px solid var(--rule);border-top-color:var(--accent);border-radius:50%;animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.out{white-space:pre-wrap;font-size:14.5px;line-height:1.6;background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:12px 14px}
+
+/* cronograma */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .hd{font:500 11px var(--f-mono);color:var(--muted);text-transform:uppercase;text-align:center;padding:4px 0}
+.cday{min-height:96px;border:1px solid var(--rule);border-radius:8px;padding:7px;background:var(--card);text-align:left;display:flex;flex-direction:column;gap:4px;min-width:0}
+.cday.out{opacity:.35}
+.cday.today{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass)}
+.cday.off{background:var(--paper)}
+.cday .n{font:600 13px var(--f-mono);display:flex;justify-content:space-between}
+.cday .n i{font-style:normal;color:var(--ok)}
+.cday .lab{font-size:11.5px;line-height:1.25;display:flex;gap:5px;align-items:flex-start;min-width:0}
+.cday .lab span{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.cday .lab .dotm{margin-top:3px;width:7px;height:7px}
+.cday .ev{font:500 10.5px var(--f-mono);color:var(--bad)}
+@media (max-width:640px){.cday{min-height:62px;padding:5px}.cday .lab span{display:none}.cday .lab{display:inline-flex}.cday .labs{display:flex;gap:3px;flex-wrap:wrap}}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.phasebar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+.phasebar div{padding:10px 12px;border-right:1px solid var(--rule);min-width:0}
+.phasebar div:last-child{border-right:0}
+.phasebar .now{background:var(--accent-soft)}
+.phasebar b{display:block;font:700 16px var(--f-display)}
+.phasebar small{color:var(--muted);font-size:12px}
+@media (max-width:640px){.phasebar{grid-template-columns:repeat(2,minmax(0,1fr))}.phasebar div:nth-child(2){border-right:0}.phasebar div:nth-child(-n+2){border-bottom:1px solid var(--rule)}}
+
+/* edital */
+.mats{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
+.mat{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--mc);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.mat header{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.mat .pct{font:500 12px var(--f-mono);color:var(--muted)}
+.prog{height:5px;background:var(--rule);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--mc);width:0}
+.tchk{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;line-height:1.35;cursor:pointer}
+.tchk input{margin-top:2px;accent-color:var(--accent)}
+.tchk.done span{color:var(--muted);text-decoration:line-through}
+
+/* desempenho */
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 92px;gap:10px;align-items:center;font-size:13.5px}
+.bar .tr{height:14px;background:var(--rule);border-radius:3px;overflow:hidden}
+.bar .tr i{display:block;height:100%;background:var(--mc)}
+.bar .n{font:500 12px var(--f-mono);text-align:right;color:var(--muted)}
+@media (max-width:520px){.bar{grid-template-columns:100px minmax(0,1fr) 70px;font-size:12px}}
+.heat{display:grid;grid-template-columns:repeat(auto-fill,12px);gap:3px}
+.heat i{width:12px;height:12px;border-radius:2px;background:var(--rule)}
+.heat i.l1{background:color-mix(in srgb,var(--accent) 35%,var(--rule))}
+.heat i.l2{background:color-mix(in srgb,var(--accent) 65%,var(--rule))}
+.heat i.l3{background:var(--accent)}
+
+/* erros */
+.err{background:var(--card);border:1px solid var(--rule);border-left:4px solid var(--mc);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.err .meta{font:500 11.5px var(--f-mono);color:var(--muted)}
+
+/* timer */
+.timer{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.timer .tv{font:700 28px var(--f-display);font-variant-numeric:tabular-nums lining-nums;min-width:4.2ch}
+
+/* tables */
+.scroll{overflow-x:auto;border:1px solid var(--rule);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{border-bottom:1px solid var(--rule);padding:8px 10px;text-align:left;vertical-align:top}
+th{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);background:var(--paper)}
+.alvos{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.alvo{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:8px}
+.alvo.prio{border:2px solid var(--accent)}
+.alvo .sal{font:700 30px var(--f-display)}
+.alvo dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0;font-size:13.5px}
+.alvo dt{font:500 11px var(--f-mono);color:var(--muted);padding-top:2px}
+.alvo dd{margin:0}
+ol.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;max-width:70ch}
+.reg{margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule)}
+.conta{display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:12px}
+.conta .btn{color:var(--side-ink);border-color:var(--side-hi);background:transparent;justify-content:center}
+@media (max-width:860px){.conta{display:none}}
+.mfoot{display:none}
+@media (max-width:860px){.mfoot{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;font-size:12.5px;color:var(--muted);margin-top:24px}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+
+<div class="app">
+  <aside class="side" aria-label="Navegação">
+    <div class="brand"><div class="ex">Autos nº 001/2026</div><h1>Autos da <em>Defensoria</em></h1></div>
+    <nav class="nav" id="nav">
+      <span class="grp">Geral</span>
+      <a href="#inicio" data-r="inicio"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7l6-5 6 5v7H2z"/></svg>Início</a>
+      <a href="#hoje" data-r="hoje"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 6h12M5 1.5v3M11 1.5v3"/></svg>Hoje<span class="badge" id="navBadge" hidden></span></a>
+      <a href="#cronograma" data-r="cronograma"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12v11H2zM2 7h12M6 7v7M10 7v7"/></svg>Cronograma</a>
+      <span class="grp">Treino</span>
+      <a href="#questoes" data-r="questoes"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M6.3 6.2a1.8 1.8 0 113 1.4c-.8.5-1.3.9-1.3 1.8M8 11.5v.2"/></svg>Questões</a>
+      <a href="#erros" data-r="erros"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h8l2 2v10H3z"/><path d="M6 7l4 4M10 7l-4 4"/></svg>Caderno de erros<span class="badge" id="errBadge" hidden></span></a>
+      <a href="#edital" data-r="edital"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4l1.5 1.5L7 3M3 9l1.5 1.5L7 8M9 4.5h4M9 9.5h4M3 13h10"/></svg>Edital verticalizado</a>
+      <a href="#desempenho" data-r="desempenho"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14h12M4 12V8M8 12V4M12 12V6"/></svg>Desempenho</a>
+      <span class="grp">Referência</span>
+      <a href="#alvos" data-r="alvos"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r=".6"/></svg>Alvos e editais</a>
+      <a href="#metodo" data-r="metodo"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12l3-3 2 2 5-6"/><path d="M10 5h2v2"/></svg>Método</a>
+      <a href="../biblioteca/"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2h3v12H3zM7 2h3v12H7zM11 3l2.5-.6 1.5 11.2-2.5.6z"/></svg>Biblioteca D'Ávila</a>
+    </nav>
+    <div class="foot"><b id="sideCount">—</b><span id="sideTxt">dias de plano</span><div id="conta" class="conta"></div></div>
+  </aside>
+  <main class="main"><div class="view" id="view"></div><div class="mfoot" id="conta2"></div></main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script type="module">
+import {openStore,askClaude,registerSW} from "../shared/store.js";
+registerSW();
+/* ================= utilidades ================= */
+const pad=n=>String(n).padStart(2,"0");
+const D=s=>new Date(s+"T12:00:00");
+const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const addDays=(s,n)=>{const d=D(s);d.setDate(d.getDate()+n);return iso(d)};
+const todayIso=()=>iso(new Date());
+const dow=s=>D(s).getDay();
+const diffDays=(a,b)=>Math.round((D(b)-D(a))/864e5);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const MESES=["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
+const SEM=["domingo","segunda-feira","terça-feira","quarta-feira","quinta-feira","sexta-feira","sábado"];
+const SEM3=["dom","seg","ter","qua","qui","sex","sáb"];
+const fmtLong=s=>{const d=D(s);return SEM[d.getDay()]+", "+d.getDate()+" de "+MESES[d.getMonth()]+" de "+d.getFullYear()};
+const fmtShort=s=>{const d=D(s);return pad(d.getDate())+"/"+pad(d.getMonth()+1)};
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2600)}
+
+/* ================= conteúdo ================= */
+const START="2026-11-02", END="2028-12-31";
+const FASES=[
+ {id:"f0",nome:"Reconhecimento",ini:"2026-11-02",fim:"2027-01-10",banca:"FCC (DPE-SP)",per:"nov/26 – jan/27"},
+ {id:"f1",nome:"Base",ini:"2027-01-11",fim:"2027-06-30",banca:"Fundep (DPE-MG)",per:"jan – jun/27"},
+ {id:"f2",nome:"Construção",ini:"2027-07-01",fim:"2028-03-31",banca:"Fundep (DPE-MG)",per:"jul/27 – mar/28"},
+ {id:"f3",nome:"Aprovação",ini:"2028-04-01",fim:"2028-12-31",banca:"Fundep (DPE-MG)",per:"abr – dez/28"}];
+const faseDe=s=>FASES.find(f=>s>=f.ini&&s<=f.fim)||FASES[3];
+
+const MAT={
+ inst:{n:"Princípios Institucionais",c:"--m-inst",man:"Princípios Institucionais da Defensoria Pública, de Franklyn Roger e Diogo Esteves"},
+ dh:{n:"Direitos Humanos",c:"--m-dh",man:"Curso de Direitos Humanos, de André de Carvalho Ramos"},
+ const:{n:"Constitucional",c:"--m-const",man:"Direito Constitucional Esquematizado, de Pedro Lenza"},
+ adm:{n:"Administrativo",c:"--m-adm",man:"Manual de Direito Administrativo, de Matheus Carvalho"},
+ penpp:{n:"Penal e Processo Penal",c:"--m-pen",man:"lei seca do CP e do CPP"},
+ ep:{n:"Execução Penal",c:"--m-pen",man:"lei seca da LEP (Lei 7.210/84)"},
+ civ:{n:"Civil",c:"--m-civ",man:"Manual de Direito Civil, de Flávio Tartuce"},
+ pc:{n:"Processo Civil",c:"--m-civ",man:"Manual de Direito Processual Civil, de Daniel Amorim Assumpção Neves"},
+ dif:{n:"Difusos e Coletivos",c:"--m-civ",man:"Interesses Difusos e Coletivos, de Andrade, Masson e Andrade"},
+ cdc:{n:"Consumidor",c:"--m-civ",man:"Interesses Difusos e Coletivos, de Andrade, Masson e Andrade (parte de consumidor) e CDC"},
+ eca:{n:"Criança e Adolescente",c:"--m-eca",man:"Estatuto da Criança e do Adolescente Comentado, de Rossato, Lépore e Cunha"},
+ filo:{n:"Filosofia e Sociologia",c:"--m-filo",man:"textos indicados em cada tópico"},
+ fraca:{n:"Matéria mais fraca",c:"--m-mix",man:"manual da matéria indicada"}};
+const mc=k=>`var(${(MAT[k]||MAT.fraca).c})`;
+
+/* [título, leitura, foco das questões] */
+const TOP={
+ inst:[
+  ["Missão constitucional da Defensoria","CF arts. 5º, LXXIV, e 134; art. 98 do ADCT (EC 80/2014)","autonomia, interiorização e prazo do ADCT"],
+  ["Princípios institucionais","LC 80/94, arts. 1º a 3º","unidade, indivisibilidade e independência funcional"],
+  ["Funções institucionais","LC 80/94, art. 4º","rol de funções, atuação extrajudicial e coletiva"],
+  ["Direitos dos assistidos","LC 80/94, art. 4º-A","informação, qualidade do atendimento, patrocínio por outro defensor"],
+  ["Normas gerais para as Defensorias dos Estados","LC 80/94, Título IV (organização das DPEs)","órgãos da administração superior e de atuação"],
+  ["Garantias dos membros","LC 80/94, art. 127","inamovibilidade, irredutibilidade, estabilidade"],
+  ["Prerrogativas","LC 80/94, art. 128","intimação pessoal, prazo em dobro, poder de requisição"],
+  ["Deveres, proibições e impedimentos","LC 80/94, arts. 129 a 131","vedações e hipóteses de impedimento"],
+  ["DPMG: estrutura e órgãos","LC estadual 65/2003 (organização da DPMG)","Defensor-Geral, Conselho Superior, Corregedoria"],
+  ["DPMG: carreira","LC estadual 65/2003 (carreira)","ingresso, classes, promoção, estágio probatório"],
+  ["Hipossuficiência e vulnerabilidade","LC 80/94, art. 4º, e o manual de Franklyn Roger e Diogo Esteves","hipossuficiência econômica e organizacional, custos vulnerabilis"],
+  ["Tutela coletiva pela Defensoria","Lei 7.347/85, art. 5º, II; STF, ADI 3943","legitimidade para ação civil pública"],
+  ["Defensoria no CPC","CPC, arts. 72, 185 a 187","curadoria especial, prazo em dobro, responsabilidade do defensor"],
+  ["Defensoria na execução penal","LEP, arts. 81-A e 81-B","atribuições como órgão da execução"],
+  ["Autonomia e poder de requisição","LC 80/94, art. 128, X, e a jurisprudência do STF sobre requisição","autonomia funcional e administrativa"]],
+ dh:[
+  ["Teoria geral dos direitos humanos","Carvalho Ramos, parte geral","características, dimensões, universalismo e relativismo"],
+  ["Sistema global de proteção","Carta da ONU; DUDH; PIDCP e PIDESC (Decretos 592/92 e 591/92)","estrutura e mecanismos de monitoramento"],
+  ["Mecanismos da ONU","Carvalho Ramos, sistema ONU","comitês de tratados, relatores e Revisão Periódica Universal"],
+  ["Comissão Interamericana","CADH (Decreto 678/92), arts. 34 a 51","petição individual e admissibilidade"],
+  ["Corte Interamericana","CADH, arts. 52 a 69","competência contenciosa e consultiva"],
+  ["Casos brasileiros na Corte IDH","Ximenes Lopes, Gomes Lund, Favela Nova Brasília, Herzog","fatos, condenações e cumprimento"],
+  ["Incorporação de tratados","CF art. 5º, §§ 2º e 3º; STF, RE 466.343","supralegalidade e status constitucional"],
+  ["Controle de convencionalidade","Carvalho Ramos; jurisprudência da Corte IDH","modalidades e diálogo das cortes"],
+  ["Federalização de graves violações","CF art. 109, V-A e § 5º","incidente de deslocamento de competência"],
+  ["Igualdade racial","Lei 12.288/2010; Convenção Interamericana contra o Racismo","ações afirmativas e racismo estrutural"],
+  ["Gênero e violência contra a mulher","CEDAW; Convenção de Belém do Pará; Lei 11.340/2006","dever de diligência"],
+  ["Pessoa com deficiência","CDPD (Decreto 6.949/2009); Lei 13.146/2015","modelo social e capacidade legal"],
+  ["População em situação de rua","STF, ADPF 976; Decreto 7.053/2009","política nacional e vedações"],
+  ["Sistema prisional","Regras de Mandela; STF, ADPF 347","estado de coisas inconstitucional"],
+  ["Povos indígenas e comunidades tradicionais","Convenção 169 da OIT; CF arts. 231 e 232","consulta prévia, livre e informada"],
+  ["Migrantes e refugiados","Lei 13.445/2017; Lei 9.474/1997","não devolução e acolhida humanitária"]],
+ const:[
+  ["Teoria da Constituição","Lenza, capítulos iniciais","conceitos, classificações, neoconstitucionalismo"],
+  ["Poder constituinte e reforma","CF art. 60","limites ao poder reformador e cláusulas pétreas"],
+  ["Hermenêutica constitucional","Lenza, interpretação","métodos e princípios de interpretação"],
+  ["Direitos fundamentais: teoria geral","CF art. 5º, §§ 1º a 4º","eficácia horizontal, restrições, proporcionalidade"],
+  ["Igualdade, liberdade e privacidade","CF art. 5º, I a XVI","domicílio, sigilos, liberdade de expressão"],
+  ["Garantias penais e processuais","CF art. 5º, XXXVII a LXVII","juiz natural, presunção de inocência, prisão"],
+  ["Remédios constitucionais","CF art. 5º, LXVIII a LXXIII; Leis 12.016/09 e 13.300/16","HC, MS, MI, HD e ação popular"],
+  ["Direitos sociais","CF arts. 6º a 11","mínimo existencial, reserva do possível, vedação de retrocesso"],
+  ["Nacionalidade e direitos políticos","CF arts. 12 a 17","inelegibilidades, perda e suspensão"],
+  ["Organização do Estado","CF arts. 18 a 36","repartição de competências e intervenção"],
+  ["Poder Legislativo e processo legislativo","CF arts. 44 a 69","CPI, imunidades, espécies normativas"],
+  ["Poder Executivo","CF arts. 76 a 91","atribuições e crimes de responsabilidade"],
+  ["Poder Judiciário","CF arts. 92 a 126","CNJ, súmula vinculante, repercussão geral"],
+  ["Funções essenciais à Justiça","CF arts. 127 a 135","MP, Advocacia Pública, Advocacia e Defensoria"],
+  ["Controle difuso","CF art. 97; Súmula Vinculante 10","reserva de plenário e efeitos"],
+  ["Controle concentrado","CF arts. 102 e 103; Lei 9.868/99","ADI, ADC, ADO, legitimados e modulação"],
+  ["ADPF","Lei 9.882/99","subsidiariedade e ADPFs estruturais"],
+  ["Ordem social","CF arts. 193 a 232","saúde, educação, assistência e família"],
+  ["Constituição de Minas Gerais","CEMG, Defensoria e controle estadual","representação de inconstitucionalidade no TJMG"]],
+ adm:[
+  ["Regime jurídico-administrativo","CF art. 37, caput","supremacia, indisponibilidade e princípios"],
+  ["Organização administrativa","DL 200/67; CF art. 37, XIX e XX","autarquias, fundações, empresas estatais"],
+  ["Terceiro setor","Leis 9.637/98, 9.790/99 e 13.019/14","OS, OSCIP e parcerias do MROSC"],
+  ["Poderes administrativos","Carvalho, capítulo de poderes","poder de polícia e abuso de poder"],
+  ["Atos administrativos: elementos","Lei 9.784/99","elementos, atributos e classificação"],
+  ["Atos administrativos: extinção","Lei 9.784/99, arts. 53 a 55; Súmula 473 do STF","anulação, revogação e convalidação"],
+  ["Licitações: princípios e modalidades","Lei 14.133/21, arts. 5º e 28","modalidades e critérios de julgamento"],
+  ["Contratação direta","Lei 14.133/21, arts. 72 a 75","dispensa e inexigibilidade"],
+  ["Contratos administrativos","Lei 14.133/21, capítulo dos contratos","cláusulas exorbitantes e equilíbrio econômico"],
+  ["Serviços públicos","Leis 8.987/95 e 11.079/04","concessão, permissão e PPP"],
+  ["Agentes públicos","CF arts. 37 a 41","acumulação, estabilidade e teto"],
+  ["Responsabilidade civil do Estado","CF art. 37, § 6º","risco administrativo, omissão, morte de preso"],
+  ["Improbidade administrativa","Lei 8.429/92 com a redação da Lei 14.230/21","dolo, tipos, prescrição e retroatividade"],
+  ["Processo administrativo","Lei 9.784/99; Lei estadual 14.184/2002","princípios, prazos e recursos"],
+  ["Bens públicos","CC arts. 98 a 103","classificação e imprescritibilidade"],
+  ["Intervenção na propriedade","CF arts. 182 a 184; DL 3.365/41","desapropriação, servidão, tombamento"],
+  ["Controle da Administração","CF arts. 70 a 75","controle externo, Tribunais de Contas, controle judicial"],
+  ["LINDB e segurança jurídica","LINDB, arts. 20 a 30","consequencialismo e erro grosseiro"]],
+ penpp:[
+  ["Princípios penais","CP arts. 1º a 3º","legalidade, insignificância, intervenção mínima"],
+  ["Sistemas processuais e princípios do processo penal","CPP art. 3º-A","acusatório, contraditório, não autoincriminação"],
+  ["Lei penal no tempo e no espaço","CP arts. 2º a 7º","retroatividade benéfica, extraterritorialidade"],
+  ["Investigação e juiz das garantias","CPP arts. 3º-B a 3º-F e 4º a 23","controle da investigação e prazos"],
+  ["Teoria do tipo","CP arts. 13 a 20","conduta, nexo causal, dolo e culpa"],
+  ["Ação penal","CPP arts. 24 a 62; CP arts. 100 a 106","espécies, condições e representação"],
+  ["Ilicitude","CP arts. 23 a 25","excludentes e excesso"],
+  ["Acordo de não persecução penal","CPP art. 28-A","requisitos, vedações e retroatividade"],
+  ["Culpabilidade e erro","CP arts. 20 a 22 e 26 a 28","imputabilidade, erro de tipo e de proibição"],
+  ["Competência","CPP arts. 69 a 91","conexão, continência e prerrogativa de foro"],
+  ["Iter criminis","CP arts. 14 a 17","tentativa, desistência, arrependimento, crime impossível"],
+  ["Provas: teoria geral e ilicitude","CPP arts. 155 a 157","prova ilícita e derivada"],
+  ["Concurso de pessoas","CP arts. 29 a 31","autoria, participação e domínio do fato"],
+  ["Cadeia de custódia","CPP arts. 158-A a 158-F","etapas e consequências da quebra"],
+  ["Penas e dosimetria","CP arts. 59 e 68","as três fases e súmulas do STJ"],
+  ["Testemunhas, interrogatório e reconhecimento","CPP arts. 185 a 228","reconhecimento pessoal (art. 226) e a jurisprudência do STJ"],
+  ["Regimes e substituição","CP arts. 33 a 44","regime inicial e penas restritivas"],
+  ["Busca e apreensão","CPP arts. 240 a 250","busca domiciliar e fundadas razões"],
+  ["Concurso de crimes","CP arts. 69 a 71","material, formal e continuidade delitiva"],
+  ["Prisão em flagrante e audiência de custódia","CPP arts. 301 a 310","relaxamento e conversão"],
+  ["Prescrição","CP arts. 107 a 119","espécies, marcos interruptivos, cálculo"],
+  ["Prisão preventiva","CPP arts. 311 a 316","requisitos, contemporaneidade, revisão nonagesimal"],
+  ["Crimes contra a vida","CP arts. 121 a 128","qualificadoras e privilégio"],
+  ["Cautelares diversas e domiciliar","CPP arts. 317 a 320","prisão domiciliar e medidas do art. 319"],
+  ["Crimes contra o patrimônio","CP arts. 155 a 180","furto, roubo, receptação, princípio da insignificância"],
+  ["Procedimento comum","CPP arts. 394 a 405","resposta à acusação e absolvição sumária"],
+  ["Lei de Drogas","Lei 11.343/06, arts. 28 a 40","tráfico privilegiado e distinção usuário/traficante"],
+  ["Júri: primeira fase","CPP arts. 406 a 421","pronúncia, impronúncia e desclassificação"],
+  ["Violência doméstica","Lei 11.340/06","medidas protetivas e art. 24-A"],
+  ["Júri: plenário","CPP arts. 422 a 497","quesitação e soberania dos veredictos"],
+  ["Crimes hediondos e Estatuto do Desarmamento","Lei 8.072/90; Lei 10.826/03","hediondez e posse/porte"],
+  ["Nulidades","CPP arts. 563 a 573","absolutas, relativas e prejuízo"],
+  ["Crimes contra a dignidade sexual","CP arts. 213 a 234-B","estupro de vulnerável e consentimento"],
+  ["Apelação e recurso em sentido estrito","CPP arts. 581 a 603","cabimento e efeitos"],
+  ["Criminologia: escolas","Baratta, Criminologia Crítica e Crítica do Direito Penal","escola clássica, positivista e sociológicas"],
+  ["Habeas corpus","CPP arts. 647 a 667","cabimento e HC substitutivo"],
+  ["Criminologia crítica e labelling","Baratta; Zaffaroni","seletividade e etiquetamento"],
+  ["Revisão criminal e Juizados","CPP arts. 621 a 631; Lei 9.099/95","transação e suspensão condicional do processo"]],
+ ep:[
+  ["Princípios e direitos do preso","LEP arts. 1º a 4º e 40 a 43","direitos e individualização"],
+  ["Deveres e disciplina","LEP arts. 38, 39 e 44 a 60","faltas leves, médias e graves"],
+  ["Procedimento disciplinar","LEP arts. 59 e 60; Súmulas 533 e 534 do STJ","PAD, defesa técnica e efeitos da falta grave"],
+  ["Progressão de regime","LEP art. 112 (Lei 13.964/19)","frações e exame criminológico"],
+  ["Remição","LEP arts. 126 a 130","trabalho, estudo e leitura"],
+  ["Detração","CP art. 42; CPP art. 387, § 2º","cálculo e momento"],
+  ["Livramento condicional","CP arts. 83 a 90; LEP arts. 131 a 146; Súmula 535 do STJ","requisitos e revogação"],
+  ["Autorizações de saída","LEP arts. 120 a 125 (com a Lei 14.843/2024)","permissão de saída e saída temporária"],
+  ["Indulto e comutação","CF art. 84, XII; decretos anuais","requisitos e falta grave"],
+  ["Regime disciplinar diferenciado","LEP art. 52","hipóteses e duração"],
+  ["Incidentes e agravo em execução","LEP arts. 180 a 197","conversões, excesso e agravo"],
+  ["Prisão domiciliar e monitoração","LEP art. 117; CPP art. 318; STF, HC 143.641","gestantes, mães e doença grave"]],
+ civ:[
+  ["Pessoa natural e personalidade","CC arts. 1º a 21","capacidade (com a Lei 13.146/15) e direitos da personalidade"],
+  ["Pessoa jurídica e domicílio","CC arts. 40 a 78","desconsideração da personalidade jurídica"],
+  ["Bens","CC arts. 79 a 103","classificação e bem de família"],
+  ["Negócio jurídico","CC arts. 104 a 184","defeitos e invalidade"],
+  ["Prescrição e decadência","CC arts. 189 a 211","causas impeditivas, suspensivas e interruptivas"],
+  ["Obrigações","CC arts. 233 a 420","modalidades, adimplemento e inadimplemento"],
+  ["Teoria geral dos contratos","CC arts. 421 a 480","função social, boa-fé e revisão"],
+  ["Contratos em espécie","CC arts. 481 a 853","compra e venda, locação, doação"],
+  ["Responsabilidade civil","CC arts. 186, 187 e 927 a 954","dano moral, objetiva e subjetiva"],
+  ["Posse","CC arts. 1.196 a 1.224","efeitos e proteção possessória"],
+  ["Propriedade e usucapião","CC arts. 1.228 a 1.276; CF arts. 183 e 191","modalidades de usucapião"],
+  ["Direitos reais sobre coisa alheia","CC arts. 1.369 a 1.510","superfície, servidões, direito real de laje"],
+  ["Casamento e regimes de bens","CC arts. 1.511 a 1.688","regimes e pacto antenupcial"],
+  ["União estável","CC arts. 1.723 a 1.727","requisitos, efeitos e uniões homoafetivas"],
+  ["Filiação e parentesco","CC arts. 1.591 a 1.638","socioafetividade e multiparentalidade"],
+  ["Guarda e convivência","CC arts. 1.583 a 1.590","guarda compartilhada e alienação parental"],
+  ["Alimentos","CC arts. 1.694 a 1.710","binômio, revisão, alimentos avoengos"],
+  ["Sucessão legítima","CC arts. 1.829 a 1.856","concorrência do cônjuge e do companheiro"],
+  ["Sucessão testamentária","CC arts. 1.857 a 1.990","formas e legítima"],
+  ["Curatela e tomada de decisão apoiada","CC arts. 1.767 a 1.783-A","pessoa com deficiência"]],
+ pc:[
+  ["Normas fundamentais","CPC arts. 1º a 12","contraditório, vedação de decisão surpresa"],
+  ["Gratuidade da justiça","CPC arts. 98 a 102","concessão, impugnação e revogação"],
+  ["Defensoria e curadoria especial no CPC","CPC arts. 72 e 185 a 187","prazo em dobro e intimação pessoal"],
+  ["Competência","CPC arts. 42 a 66","absoluta e relativa, modificação"],
+  ["Partes, litisconsórcio e procuradores","CPC arts. 70 a 118","capacidade e litisconsórcio"],
+  ["Intervenção de terceiros","CPC arts. 119 a 138","amicus curiae e desconsideração"],
+  ["Tutela provisória","CPC arts. 294 a 311","urgência, evidência e estabilização"],
+  ["Petição inicial e improcedência liminar","CPC arts. 319 a 332","requisitos e emenda"],
+  ["Contestação e revelia","CPC arts. 335 a 346","defesas e efeitos da revelia"],
+  ["Saneamento e provas","CPC arts. 357 a 484","ônus dinâmico da prova"],
+  ["Sentença e coisa julgada","CPC arts. 485 a 508","limites da coisa julgada"],
+  ["Recursos: teoria geral","CPC arts. 994 a 1.008","efeitos e pressupostos"],
+  ["Apelação e agravo de instrumento","CPC arts. 1.009 a 1.020","cabimento e taxatividade mitigada"],
+  ["Recursos aos tribunais superiores","CPC arts. 1.029 a 1.044","REsp, RE e repetitivos"],
+  ["Precedentes e IRDR","CPC arts. 926, 927 e 976 a 987","força vinculante"],
+  ["Cumprimento de sentença","CPC arts. 513 a 538","multa, impugnação, Fazenda"],
+  ["Execução de alimentos","CPC arts. 528 a 533 e 911 a 913","prisão civil e rito"],
+  ["Execução de título extrajudicial","CPC arts. 771 a 925","penhora e impenhorabilidades"],
+  ["Ações de família","CPC arts. 693 a 699","mediação e procedimento"],
+  ["Ações possessórias","CPC arts. 554 a 568","litígios coletivos pela posse"],
+  ["Mandado de segurança e Juizados","Lei 12.016/09; Lei 9.099/95; Lei 12.153/09","procedimento e recursos"]],
+ dif:[
+  ["Microssistema da tutela coletiva","Lei 7.347/85; CDC arts. 81 a 104","difusos, coletivos e individuais homogêneos"],
+  ["Legitimidade da Defensoria","Lei 7.347/85, art. 5º, II; STF, ADI 3943","pertinência e limites"],
+  ["Inquérito civil e TAC","Lei 7.347/85, arts. 5º, § 6º, e 8º e 9º","compromisso de ajustamento"],
+  ["Coisa julgada coletiva","CDC art. 103; Lei 7.347/85, art. 16","secundum eventum litis e limites territoriais"],
+  ["Liquidação e execução coletiva","CDC arts. 95 a 100","fluid recovery"],
+  ["Meio ambiente","CF art. 225; Lei 6.938/81","responsabilidade ambiental"],
+  ["Ordem urbanística","Estatuto da Cidade (Lei 10.257/01)","função social da cidade"],
+  ["Moradia e regularização fundiária","Lei 13.465/17","REURB-S e REURB-E"],
+  ["Pessoa idosa","Lei 10.741/03","direitos e tutela coletiva"],
+  ["Saúde e judicialização","Lei 8.080/90 e os temas do STF sobre medicamentos","fornecimento de medicamentos"],
+  ["Ação popular e improbidade como tutela coletiva","Lei 4.717/65","legitimidade e objeto"]],
+ cdc:[
+  ["Relação de consumo","CDC arts. 1º a 3º e 17 a 29","consumidor por equiparação e finalismo mitigado"],
+  ["Princípios e direitos básicos","CDC arts. 4º a 7º","vulnerabilidade e inversão do ônus"],
+  ["Fato do produto e do serviço","CDC arts. 12 a 17","excludentes de responsabilidade"],
+  ["Vício do produto e do serviço","CDC arts. 18 a 25","prazos e opções do consumidor"],
+  ["Prescrição e decadência no CDC","CDC arts. 26 e 27","contagem"],
+  ["Práticas comerciais e oferta","CDC arts. 30 a 35","vinculação da oferta"],
+  ["Publicidade","CDC arts. 36 a 38","enganosa e abusiva"],
+  ["Práticas abusivas","CDC arts. 39 a 41","venda casada e cobrança indevida (art. 42)"],
+  ["Contratos e cláusulas abusivas","CDC arts. 46 a 54","adesão e nulidades"],
+  ["Superendividamento","CDC arts. 54-A a 54-G e 104-A a 104-C (Lei 14.181/21)","mínimo existencial e repactuação"],
+  ["Bancos de dados e cadastros","CDC arts. 43 e 44; Súmula 385 do STJ","negativação e dano moral"]],
+ eca:[
+  ["Proteção integral e princípios","ECA arts. 1º a 6º; CF art. 227","prioridade absoluta e melhor interesse"],
+  ["Direitos fundamentais","ECA arts. 7º a 69","convivência familiar e educação"],
+  ["Família natural e substituta","ECA arts. 19 a 32","guarda e tutela"],
+  ["Adoção","ECA arts. 39 a 52-D","cadastro, adoção intuitu personae"],
+  ["Medidas de proteção","ECA arts. 98 a 102","acolhimento institucional"],
+  ["Ato infracional e garantias","ECA arts. 103 a 111","garantias processuais"],
+  ["Medidas socioeducativas","ECA arts. 112 a 125; Súmula 492 do STJ","internação e excepcionalidade"],
+  ["SINASE","Lei 12.594/12","execução das medidas"],
+  ["Procedimento de apuração de ato infracional","ECA arts. 171 a 190","remissão e oitiva"],
+  ["Conselho Tutelar e rede","ECA arts. 131 a 140","atribuições"],
+  ["Crimes e infrações administrativas do ECA","ECA arts. 225 a 258-C","tipos penais e infrações"]],
+ filo:[
+  ["Jusnaturalismo e positivismo","Kelsen, Teoria Pura do Direito; Hart, O Conceito de Direito","validade e moral"],
+  ["Pós-positivismo","Dworkin; Alexy","princípios e ponderação"],
+  ["Teorias da justiça","Rawls, Uma Teoria da Justiça","véu da ignorância e princípio da diferença"],
+  ["Poder e prisão","Foucault, Vigiar e Punir","disciplina e sociedade de controle"],
+  ["Sociologia jurídica clássica","Weber; Durkheim","racionalização e solidariedade"],
+  ["Campo jurídico","Bourdieu, O Poder Simbólico","capital simbólico e habitus"],
+  ["Acesso à justiça","Cappelletti e Garth, Acesso à Justiça","as três ondas"],
+  ["Pluralismo jurídico","Boaventura de Sousa Santos","direito de Pasárgada"],
+  ["Teoria crítica","Escola de Frankfurt","razão instrumental"],
+  ["Seletividade penal","Baratta; Zaffaroni","criminologia crítica e sistema penal"]]
+};
+
+const AUDIO=[ /* [rótulo, aulas, trajetos por aula] */
+ ["Pós Greco · Garantismo Penal e Processual Penal (Douglas Fischer)",2,4],
+ ["Pós Greco · Tribunal do Júri (Flávio César)",1,4],
+ ["Pós Greco · Segurança Pública I (Bruno Zampier), Aula 2 a partir de 1h07 e Aula 3",1,5],
+ ["Pós Greco · Inquérito Policial (Marcus Murilo Ribeiro)",4,4],
+ ["Pós Greco · Criminologia (Christiano Gonzaga)",4,4],
+ ["Pós Greco · Organizações criminosas: PCC e CV",3,4],
+ ["Pós Greco · Inteligência e Terrorismo (Christian Vianna)",3,4],
+ ["Pós Greco · Teoria dos Recursos (André Ubaldino)",5,4],
+ ["Talon · Execução Penal",85,1],
+ ["Talon · Curso Indulto e Comutação",31,1],
+ ["Talon · Legislação Penal Especial",100,1],
+ ["Talon · Lei de Drogas",4,1],
+ ["Talon · Processo Penal",278,1],
+ ["Talon · Direito Penal",223,1],
+ ["Talon · Lei Anticrime",244,1]];
+const AUDIO_SEQ=[];AUDIO.forEach(([r,a,t])=>{for(let i=1;i<=a;i++)for(let j=1;j<=t;j++)AUDIO_SEQ.push({r,aula:i,de:a,tr:j,trs:t})});
+
+const PROVAS=[
+ ["DPE-MG 2023 · Fundep · 100 questões","https://www.qconcursos.com/questoes-de-concursos/provas/fundep-gestao-de-concursos-2023-dpe-mg-defensor-publico-de-classe-inicial"],
+ ["DPE-MG 2019 · Fundep","https://www.qconcursos.com/questoes-de-concursos/provas"],
+ ["DPE-SP (edição anterior) · FCC","https://www.qconcursos.com/questoes-de-concursos/provas"],
+ ["DPU 2017 · Cebraspe","https://www.qconcursos.com/questoes-de-concursos/provas"],
+ ["DPE-MG 2014 · Fundep","https://www.qconcursos.com/questoes-de-concursos/provas"]];
+
+const OFF=new Set(["2026-12-24","2026-12-25","2026-12-31","2027-01-01","2027-02-08","2027-02-09","2027-12-24","2027-12-25","2027-12-31","2028-01-01","2028-02-28","2028-02-29","2028-12-24","2028-12-25"]);
+const EVENTOS={
+ "2026-11-09":[{h:"12:30",t:"Decidir e pagar a inscrição na DPE-SP",d:"Prazo: 11/11 às 23h59; boleto até 12/11. Taxa de R$ 250, no site da FCC. A ideia é usar a objetiva como diagnóstico real."}],
+ "2026-11-30":[{h:"12:30",t:"Prazo da Atividade Avaliativa 1 da pós Greco",d:"Anexar na plataforma Hotscool. Nome do arquivo no padrão da plataforma: Joao-Davila_Atividade4."}],
+ "2026-12-29":[{h:"12:30",t:"Enviar a Atividade Avaliativa 2 da pós Greco",d:"Prazo final 31/12. Nome do arquivo: Joao-Davila_Atividade7."}],
+ "2027-01-10":[{h:"08:00",t:"Objetiva da DPE-SP (FCC) em São Paulo",d:"88 questões, 4h30. Confirme local e horário na convocação da FCC (prevista para 04/12/2026). Depois da prova, mande o gabarito para eu montar o diagnóstico."}]};
+const BLOCO_ESP={
+ "2026-11-24":{t:"Redigir a Atividade Avaliativa 1 da pós Greco",d:"Tema: evolução histórica do Direito Penal, das punições corporais às escolas penais, e a tensão entre Garantismo e Direito Penal do Inimigo. Entre 1.500 e 3.000 caracteres sem espaços, Arial 12, espaçamento 1,5. Entrega até 30/11.",m:"penpp",esp:"greco"},
+ "2026-12-15":{t:"Redigir a Atividade Avaliativa 2 da pós Greco",d:"Tema: Tribunal do Júri, competência constitucional, princípios, procedimento, jurados e participação popular. Entre 1.500 e 3.000 caracteres sem espaços, Arial 12, espaçamento 1,5. Entrega até 31/12.",m:"penpp",esp:"greco"}};
+
+function slotMat(fase,wd,w){
+  if(fase==="f0")return {1:"inst",2:"penpp",3:"dh",4:"const"}[wd];
+  if(fase==="f1")return {1:"const",2:"penpp",3:"adm",4:w%2?"inst":"dh"}[wd];
+  if(fase==="f2")return {1:"civ",2:"pc",3:["dif","cdc","eca"][w%3],4:w%4===3?"filo":(w%2?"penpp":"ep")}[wd];
+  return {1:"fraca",2:"fraca",3:"penpp",4:w%2?"inst":"dh"}[wd];
+}
+
+/* ================= gerador do plano ================= */
+const PLAN={};
+(function build(){
+  const cnt={}; let ai=0; let d=START;
+  while(d<=END){
+    const wd=dow(d), w=Math.floor(diffDays(START,d)/7), f=faseDe(d), items=[];
+    const off=OFF.has(d);
+    const eventos=EVENTOS[d]||[];
+    const semanaSP=d>="2027-01-04"&&d<="2027-01-08";
+    if(wd>=1&&wd<=5&&!off){
+      const a=AUDIO_SEQ[Math.min(ai,AUDIO_SEQ.length-1)]; ai++;
+      items.push({id:"ida",h:"08:35",fim:"09:15",tipo:"audio",m:"inst",tag:"Ida · escuta",t:a.r,
+        lines:[["Aula",a.trs>1?`aula pendente ${a.aula} de ${a.de} · trajeto ${a.tr} de ${a.trs}`:`aula ${a.aula} de ${a.de} (a próxima ainda não assistida)`],["Como","1,25x, sem trocar de aula no meio. Ao estacionar, grave 60 segundos com as 3 ideias principais."]],audio:a});
+    }
+    eventos.forEach((e,i)=>items.push({id:"ev"+i,h:e.h,tipo:"evento",m:"pen",tag:"Prazo e compromisso",t:e.t,lines:[["Detalhe",e.d]]}));
+    if(wd>=1&&wd<=5&&!off){
+      items.push({id:"volta",h:"18:00",fim:"18:40",tipo:"volta",m:"inst",tag:"Volta · interrogatório",t:"Sabatina oral com o Claude no CarPlay"});
+    }
+    if(wd>=1&&wd<=4&&!off&&d!=="2027-01-10"){
+      let it;
+      if(BLOCO_ESP[d]){const b=BLOCO_ESP[d];it={id:"bloco",h:"21:15",fim:"22:45",tipo:"bloco",m:b.m,tag:"Bloco principal · pós",t:b.t,lines:[["Tarefa",b.d],["Apoio","Escreva o rascunho e cole aqui embaixo para eu revisar como banca antes do envio."]],esp:"greco"}}
+      else{
+        const m=slotMat(f.id,wd,w);
+        if(semanaSP){
+          it={id:"bloco",h:"21:15",fim:"22:45",tipo:"bloco",m,tag:"Reta final DPE-SP",t:"Revisão de "+MAT[m].n+" + 20 questões FCC",lines:[["Revisar","Os tópicos já estudados de "+MAT[m].n+" nas últimas semanas, pelos cartões e pelo caderno de erros."],["Questões","20 questões no estilo FCC, cronometradas (3 minutos cada)."]],quiz:{m,topico:"revisão geral dos tópicos já estudados",foco:"pontos mais cobrados pela FCC",leitura:"",n:20,banca:"FCC (DPE-SP)"}};
+        }else if(m==="fraca"){
+          it={id:"bloco",h:"21:15",fim:"22:45",tipo:"bloco",m,tag:"Bloco principal · fase Aprovação",t:"Matéria mais fraca do seu desempenho",lines:[["Regra","A matéria é escolhida pelo seu pior percentual de acerto registrado aqui. Abra o dia para ver qual é."]],dyn:wd===1?0:1};
+        }else{
+          cnt[m]=(cnt[m]||0); const L=TOP[m]; const i=cnt[m]++; const tp=L[i%L.length]; const rod=Math.floor(i/L.length)+1;
+          it={id:"bloco",h:"21:15",fim:"22:45",tipo:"bloco",m,tag:"Bloco principal · "+MAT[m].n+(rod>1?" · rodada "+rod:""),t:tp[0],
+            lines:[["Leitura",tp[1]+(rod>1?" (revisão rápida, 20 minutos)":" (60 minutos, com resumo em tópicos)")],["Manual",MAT[m].man],["Questões","10 questões · estilo "+f.banca+" · foco: "+tp[2]+(rod>1?" (rodada de revisão: 20 questões)":"")]],
+            quiz:{m,topico:tp[0],foco:tp[2],leitura:tp[1],n:rod>1?20:10,banca:f.banca},topic:{m,i:i%L.length}};
+        }
+      }
+      items.push(it);
+      items.push({id:"cartoes",h:"22:45",fim:"23:00",tipo:"cartoes",m:"mix",tag:"Revisão espaçada",t:"Cartões e revisões do dia"});
+    }
+    if(wd===6&&!off&&d!=="2027-01-09"){
+      const prim=D(d).getDate()<=7&&d>="2027-02-01";
+      if(prim){const k=Math.floor(diffDays("2027-02-06",d)/28)%PROVAS.length;const p=PROVAS[(k+PROVAS.length)%PROVAS.length];
+        items.push({id:"sab",h:"09:00",fim:"13:30",tipo:"simulado",m:"mix",tag:"Simulado do mês",t:"Simulado completo: "+p[0],lines:[["Como","Prova inteira, cronometrada, sem consulta. Anote o gabarito e registre o resultado aqui."],["Prova",p[0]]],link:p[1]});
+      }else items.push({id:"sab",h:"09:30",fim:"11:00",tipo:"sab",m:"mix",tag:"Bateria de questões",t:"30 questões mistas da semana",lines:[["Como","Três rodadas de 10, misturando as matérias da semana. Erros vão direto para o caderno."]]});
+    }
+    if(d==="2027-01-09")items.push({id:"sab",h:"10:00",tipo:"sab",m:"mix",tag:"Véspera",t:"Leitura leve e viagem para São Paulo",lines:[["Como","Nada de conteúdo novo. Releia o caderno de erros e durma cedo."]]});
+    if(wd===0&&!off){
+      items.push({id:"dom",h:"17:00",fim:"18:30",tipo:"dom",m:"mix",tag:d<"2027-07-01"?"Escrita · discursiva":"Escrita · peça",t:d<"2027-07-01"?"Discursiva da semana":"Peça da semana",lines:[["Como",d<"2027-07-01"?"Gere o enunciado, escreva em até 30 linhas sem consulta, e peça a correção com espelho de banca.":"Gere o caso prático, redija a peça (alternando cível e criminal) e peça a correção."],["Fechamento","Últimos 20 minutos: marque no edital o que estudou e confira o desempenho da semana."]]});
+    }
+    items.push({id:"leitura",h:"23:20",fim:"23:50",tipo:"leitura",m:"filo",tag:"Leitura",t:"30 páginas",lines:[["Livre","20 páginas do seu livro do momento"],["Estudo","10 páginas do manual da fase: "+MAT[slotMat(f.id,1,w)==="fraca"?"inst":slotMat(f.id,1,w)].man]]});
+    if(wd===1&&D(d).getDate()<=7&&d>="2026-12-07")items.push({id:"mensal",h:"20:45",fim:"21:15",tipo:"evento",m:"inst",tag:"Revisão mensal",t:"Revisar o plano com o Claude",lines:[["Como","Conte como foi o mês: horas, simulado e o que travou. Eu ajusto a grade."]]});
+    items.sort((a,b)=>a.h.localeCompare(b.h));
+    PLAN[d]={d,fase:f,items,off};
+    d=addDays(d,1);
+  }
+})();
+
+/* ================= estado e dados ================= */
+let db=null;
+const DIAS={}, ERROS=new Map(), PROG={};
+let route="inicio", dia=null, dbState="Conectando…";
+const blocos=s=>PLAN[s]?PLAN[s].items.filter(i=>i.tipo!=="leitura"||true):[];
+const doneOf=s=>(DIAS[s]&&DIAS[s].done)||{};
+function pctDia(s){const p=PLAN[s];if(!p)return 0;const it=p.items;if(!it.length)return 0;const dn=doneOf(s);return Math.round(it.filter(i=>dn[i.id]).length/it.length*100)}
+
+const chains={},pend={};
+function saveDia(s,mut){
+  const cur=JSON.parse(JSON.stringify(DIAS[s]||{}));
+  mut(cur); cur.upd=new Date().toISOString(); DIAS[s]=cur;
+  if(!db){toast("Sem conexão com o armazenamento: o registro vale só nesta aba.");return Promise.resolve()}
+  pend[s]=(pend[s]||0)+1;
+  chains[s]=(chains[s]||Promise.resolve()).then(()=>db.collection("dias").doc(s).set(cur)).catch(()=>toast("Não consegui salvar. Tente de novo.")).finally(()=>{pend[s]--});
+  return chains[s];
+}
+function statsPorMat(){
+  const r={};const add=(m,f,a)=>{r[m]=r[m]||{f:0,a:0};r[m].f+=f||0;r[m].a+=a||0};
+  for(const s in DIAS){const q=DIAS[s].q||{};for(const m in q)add(m,q[m].f,q[m].a);const g=DIAS[s].reg||{};for(const k in g)add(g[k].m,g[k].f,g[k].a)}return r;
+}
+function fracas(){
+  const st=statsPorMat();const cand=["const","adm","civ","pc","dh","inst","dif","cdc","eca","ep","penpp"];
+  const arr=cand.map(m=>({m,f:(st[m]||{}).f||0,p:st[m]&&st[m].f?st[m].a/st[m].f:null}));
+  const com=arr.filter(x=>x.f>=20).sort((a,b)=>a.p-b.p);
+  const base=["adm","const","civ","pc"];const out=com.map(x=>x.m);for(const b of base)if(!out.includes(b))out.push(b);return out;
+}
+function resolveItem(s,it){
+  if(it.dyn===undefined)return it;
+  const m=fracas()[it.dyn];const L=TOP[m];
+  const feitos=new Set(Object.keys(PROG).filter(k=>k.startsWith(m+"-")));
+  let i=L.findIndex((_,j)=>!feitos.has(m+"-"+j));if(i<0)i=(diffDays(START,s)/7|0)%L.length;
+  const tp=L[i];
+  return {...it,m,tag:"Bloco principal · matéria mais fraca: "+MAT[m].n,t:tp[0],lines:[["Por quê","É a matéria com menor acerto no seu desempenho (ou a de menor base, se ainda não há dados)."],["Leitura",tp[1]+" (revisão de 30 minutos)"],["Questões","20 questões · estilo Fundep · foco: "+tp[2]]],quiz:{m,topico:tp[0],foco:tp[2],leitura:tp[1],n:20,banca:"Fundep (DPE-MG)"},topic:{m,i}};
+}
+function semanaTopicos(s){
+  const ini=addDays(s,-((dow(s)+6)%7));const out=[];
+  for(let k=0;k<4;k++){const p=PLAN[addDays(ini,k)];if(!p)continue;const b=p.items.find(i=>i.id==="bloco");if(b){const r=resolveItem(p.d,b);if(r.quiz&&r.topic)out.push({m:r.m,t:r.t,foco:r.quiz.foco,leitura:r.quiz.leitura})}}
+  return out;
+}
+function revisoesDe(s){
+  const out=[];[1,7,30].forEach(n=>{const o=addDays(s,-n);const p=PLAN[o];if(!p)return;const b=p.items.find(i=>i.id==="bloco");if(!b||!doneOf(o).bloco)return;const r=resolveItem(o,b);if(r.topic)out.push({n,m:r.m,t:r.t,o})});
+  return out;
+}
+function streak(){let n=0,s=todayIso();if(!doneOf(s).bloco&&!doneOf(s).leitura)s=addDays(s,-1);
+  for(let k=0;k<800;k++){const p=PLAN[s];if(!p)break;const dn=doneOf(s);const has=p.items.some(i=>i.id==="bloco");
+    if(has?dn.bloco:true){if(has)n++;s=addDays(s,-1)}else break}return n}
+
+/* ================= Claude (abre o chat com o pedido pronto) ================= */
+const REGRA_ERROS=`No fim, me dê o placar no formato "Placar: X de N" e liste cada erro meu em UMA linha, exatamente assim, para eu colar no meu caderno de erros:
+ERRO | matéria | o que eu errei, em uma frase | a regra correta com o fundamento (artigo, súmula ou tese)`;
+const PROMPT_Q=(q)=>`Quero treinar para o concurso de Defensor Público (prioridade DPE-MG). Faça comigo um simulado interativo de ${q.n} questões objetivas inéditas, no estilo da banca ${q.banca}, sobre ${MAT[q.m].n}: ${q.topico}.
+Foco: ${q.foco}.${q.leitura?" Base normativa: "+q.leitura+".":""}
+Regras: cinco alternativas (A a E), uma correta, nível de prova de Defensoria, com as pegadinhas típicas da banca; cobre letra da lei, jurisprudência consolidada do STF e do STJ e a visão institucional da Defensoria quando couber. Só cite dispositivos, súmulas ou julgados que você tem certeza de que existem.
+Mostre uma questão por vez (use o formato de quiz interativo se estiver disponível), espere minha resposta e só então mostre o gabarito comentado.
+${REGRA_ERROS}`;
+const PROMPT_MIX=(tops,banca)=>PROMPT_Q({n:10,banca,m:tops[0].m,topico:"questões mistas sobre os temas da semana: "+tops.map(t=>MAT[t.m].n+" ("+t.t+")").join("; "),foco:"distribua as questões entre os temas e indique o tema no início de cada enunciado",leitura:""});
+const PROMPT_DISC=(tops,peca)=>`Seja meu examinador da prova escrita de Defensor Público (DPE-MG, banca Fundep, e DPE-SP, banca FCC).
+1. Elabore ${peca?"um caso prático para eu redigir uma peça processual de Defensoria (alterne entre cível e criminal; escolha a que melhor se encaixa)":"uma questão discursiva para resposta em até 30 linhas"} sobre os temas que estudei nesta semana: ${tops.map(t=>MAT[t.m].n+": "+t.t).join("; ")}. Exija a visão institucional da Defensoria e a defesa do assistido vulnerável. Use só dispositivos e súmulas que você tem certeza de que existem.
+2. Não mostre o espelho. Espere eu enviar a minha resposta.
+3. Quando eu enviar, corrija com rigor de banca: primeira linha "Nota: X/10"; depois cada item do espelho (atendido, parcial ou não); três observações de forma e técnica; e "Para a próxima:" com duas instruções concretas.`;
+const PROMPT_REVISA=(t,txt)=>`Revise como banca este rascunho de atividade de pós-graduação em Ciências Penais. Tema: ${t}
+Aponte: 1) se cumpre o tema, 2) erros de conteúdo ou conceito, 3) trechos para cortar ou reforçar, 4) contagem aproximada de caracteres sem espaços e se está entre 1.500 e 3.000. Seja direto.
+
+RASCUNHO:
+${txt}`;
+async function abrirClaude(prompt){
+  const r=await askClaude(prompt);
+  toast(r.prefilled?(r.copied?"Abrindo o Claude com o pedido pronto (também copiado).":"Abrindo o Claude com o pedido pronto."):(r.copied?"Pedido copiado. Cole no Claude que acabou de abrir.":"Abra o Claude e cole o pedido."));
+}
+function regHtml(s,key,m,n){
+  const g=(DIAS[s]&&DIAS[s].reg&&DIAS[s].reg[key])||null;
+  return `<div class="reg row"><span class="note">Terminou no Claude? Registre:</span>
+   <input class="inp" type="number" min="0" id="ra-${key}" value="${g?g.a:""}" placeholder="acertos" style="width:84px;padding:5px 8px" aria-label="Acertos">
+   <span class="note">de</span><input class="inp" type="number" min="1" id="rn-${key}" value="${g?g.f:n}" style="width:64px;padding:5px 8px" aria-label="Total">
+   <button class="btn sm" type="button" data-reg="${s}|${key}|${m}">${g?"Atualizar":"Registrar"}</button>
+   <a class="btn sm ghost" href="#erros">Colar os erros no caderno</a></div>`;
+}
+/* ================= render: início ================= */
+function proximaProva(){
+  const t=todayIso();
+  if(t<="2027-01-10")return {d:"2027-01-10",n:"Objetiva DPE-SP"};
+  if(t<="2027-07-03")return {d:"2027-07-03",n:"Escritas DPE-SP (se aprovado na objetiva)"};
+  return null;
+}
+function renderInicio(){
+  const t=todayIso(), p=PLAN[t]||PLAN[START], h=new Date().getHours();
+  const sauda=h<12?"Bom dia":h<18?"Boa tarde":"Boa noite";
+  const inicio=t<START;
+  const pp=proximaProva();const dias=pp?diffDays(t,pp.d):null;
+  const itens=(PLAN[inicio?START:t]||{items:[]}).items.map(i=>resolveItem(p.d,i));
+  const dn=doneOf(inicio?START:t);
+  const st=statsPorMat();let F=0,A=0;for(const m in st){F+=st[m].f;A+=st[m].a}
+  const seg=addDays(t,-((dow(t)+6)%7));
+  const sem=[...Array(7)].map((_,k)=>addDays(seg,k));
+  const fase=faseDe(inicio?START:t);
+  const totDias=Object.keys(PLAN).length, passados=Math.max(0,diffDays(START,t));
+  document.getElementById("view").innerHTML=`
+  <div class="hero">
+    <section class="panel hello">
+      <span class="k">${esc(fase.nome)} · ${esc(fase.per)}</span>
+      <h2 style="margin-top:8px">${sauda}, <em>João</em>.</h2>
+      <p class="date">${fmtLong(t)}${inicio?" · o plano começa amanhã, segunda-feira, 02/11":""}</p>
+      <div class="next3">${itens.filter(i=>i.tipo!=="cartoes").slice(0,4).map(i=>`<div class="mini" style="--mc:${mc(i.m)}"><span class="h">${i.h}</span><span class="t"><span class="dotm" style="--mc:${mc(i.m)};margin-right:6px"></span>${esc(i.t)}<small>${esc(i.tag)}</small></span><span>${dn[i.id]?'<span class="pill" style="color:var(--ok)">feito</span>':""}</span></div>`).join("")}</div>
+      <div class="row" style="margin-top:14px"><a class="btn primary" href="#hoje" data-go="${inicio?START:t}">Abrir ${inicio?"o primeiro dia":"o dia de hoje"}</a><a class="btn" href="#cronograma">Ver o cronograma</a></div>
+    </section>
+    <section class="panel">
+      ${pp?`<span class="k">Faltam para a ${esc(pp.n)}</span><div class="flip">${String(dias).padStart(3,"0").split("").map(c=>`<span>${c}</span>`).join("")}<small>dias · ${fmtShort(pp.d)}</small></div>`:`<span class="k">DPE-MG</span><p style="margin-top:8px">Edital ainda não publicado. O plano mira o X Concurso (2027–2028).</p>`}
+      <div class="grid g2" style="margin-top:16px;gap:10px">
+        <div class="stat"><span class="k">Sequência</span><div class="v">${streak()}</div><div class="s">blocos seguidos cumpridos</div></div>
+        <div class="stat"><span class="k">Questões</span><div class="v">${F}</div><div class="s">${F?Math.round(A/F*100)+"% de acerto":"nenhuma registrada ainda"}</div></div>
+        <div class="stat"><span class="k">Plano</span><div class="v">${Math.min(100,Math.round(passados/totDias*100))}%</div><div class="s">do tempo até dez/2028</div></div>
+        <div class="stat"><span class="k">Erros a revisar</span><div class="v">${[...ERROS.values()].filter(e=>!e.revisado).length}</div><div class="s">no caderno</div></div>
+      </div>
+    </section>
+  </div>
+  <section class="panel">
+    <div class="row" style="justify-content:space-between"><h3>Esta semana</h3><span class="note">Toque num dia para abri-lo</span></div>
+    <div class="week" style="margin-top:12px">${sem.map(s=>{const P=PLAN[s];const b=P&&P.items.find(i=>i.id==="bloco");const ms=P?[...new Set(P.items.filter(i=>["bloco","sab","dom","simulado"].includes(i.tipo)).map(i=>resolveItem(s,i).m))]:[];
+      return `<button type="button" class="wd ${s===t?"today":""}" data-go="${s}"><div class="n">${SEM3[dow(s)]}</div><div class="d">${D(s).getDate()}</div><div class="chips">${ms.map(m=>`<i style="--mc:${mc(m)}"></i>`).join("")}</div><div class="note" style="font-size:11.5px;line-height:1.25;margin-top:4px">${b?esc(resolveItem(s,b).t):P&&P.off?"folga":dow(s)===5?"noite livre":dow(s)===6?"questões":dow(s)===0?"escrita":""}</div><div class="bar"><b style="width:${pctDia(s)}%"></b></div></button>`}).join("")}</div>
+  </section>
+  <p class="conn" id="connLine">${esc(dbState)}</p>`;
+}
+
+/* ================= render: hoje ================= */
+function lineHtml(l){return `<div class="ln"><b>${esc(l[0])}</b><span>${esc(l[1])}</span></div>`}
+function renderHoje(){
+  const s=dia||todayIso(); const P=PLAN[s];
+  if(!P){document.getElementById("view").innerHTML=`<div class="head"><div><h2>Fora do plano</h2><p>O plano vai de 02/11/2026 a 31/12/2028.</p></div></div><button class="btn" data-go="${START}">Ir para o primeiro dia</button>`;return}
+  const dn=doneOf(s), pct=pctDia(s), items=P.items.map(i=>resolveItem(s,i));
+  const revs=revisoesDe(s);
+  const tops=semanaTopicos(s);
+  document.getElementById("view").innerHTML=`
+  <div class="head">
+    <div><span class="k">${esc(P.fase.nome)} · ${s===todayIso()?"hoje":s<todayIso()?"dia passado":"dia futuro"}</span><div class="daytitle" style="margin-top:6px">${fmtLong(s)}</div></div>
+    <div class="dayprog"><div class="ring" style="--p:${pct}"><span>${pct}%</span></div>
+      <div class="daynav"><button class="x" type="button" data-go="${addDays(s,-1)}" aria-label="Dia anterior">‹</button><button class="btn sm" type="button" data-go="${todayIso()}">Hoje</button><button class="x" type="button" data-go="${addDays(s,1)}" aria-label="Próximo dia">›</button>
+      <input class="inp" type="date" id="pickDay" value="${s}" min="${START}" max="${END}" style="width:auto;padding:6px 8px" aria-label="Escolher dia"></div></div>
+  </div>
+  ${P.off?`<div class="panel"><h3>Dia de folga</h3><p class="sub">Feriado ou data festiva. Só a leitura, se der vontade.</p></div>`:""}
+  <div class="items">${items.map(it=>itemHtml(s,it,dn,revs,tops)).join("")}</div>
+  <section class="panel"><div class="row" style="justify-content:space-between"><h3>Cronômetro de estudo</h3><span class="note" id="minHoje">${(DIAS[s]&&DIAS[s].min)||0} min registrados neste dia</span></div>
+   <div class="timer" style="margin-top:10px"><span class="tv" id="tv">00:00</span><button class="btn primary sm" id="tStart" type="button">Iniciar</button><button class="btn sm" id="tPause" type="button">Pausar</button><button class="btn sm" id="tSave" type="button">Salvar no dia</button></div></section>`;
+  document.getElementById("pickDay").addEventListener("change",e=>{if(e.target.value){dia=e.target.value;renderHoje()}});
+  bindTimer(s);
+}
+function itemHtml(s,it,dn,revs,tops){
+  const done=!!dn[it.id];
+  let extra="";
+  if(it.tipo==="volta"){
+    const ida=PLAN[s].items.find(i=>i.id==="ida");const ontem=PLAN[addDays(s,-1)]&&PLAN[addDays(s,-1)].items.find(i=>i.id==="bloco");
+    const tema=[ida?ida.t:"",ontem?resolveItem(addDays(s,-1),ontem).t:""].filter(Boolean).join(" e, da noite anterior, ");
+    const pr=`Sou candidato à Defensoria Pública de Minas Gerais. Hoje de manhã ouvi: ${tema||"[tema]"}. Faça uma sabatina oral como banca de Defensoria: uma pergunta por vez, espere minha resposta, corrija com precisão, cite o dispositivo legal ou a súmula e aumente a dificuldade a cada acerto. No fim, liste em voz alta o que eu errei.`;
+    extra=`<div class="it-body"><div class="ln"><b>Como</b><span>Abra o modo de voz do Claude no CarPlay e cole o comando abaixo antes de sair.</span></div><div class="prompt" id="pr-${s}">${esc(pr)}</div></div><div class="it-actions"><button class="btn sm" type="button" data-copy="pr-${s}">Copiar comando</button></div>`;
+  }else if(it.tipo==="cartoes"){
+    extra=`<div class="it-body">${revs.length?revs.map(r=>`<div class="ln"><b>+${r.n} ${r.n===1?"dia":"dias"}</b><span><span class="dotm" style="--mc:${mc(r.m)};margin-right:6px"></span>${esc(MAT[r.m].n)}: ${esc(r.t)} <span class="note">(estudado em ${fmtShort(r.o)})</span></span></div>`).join(""):`<div class="ln"><b>Revisões</b><span>Nenhuma revisão vence hoje. As revisões aparecem 1, 7 e 30 dias depois de cada bloco marcado como feito.</span></div>`}
+      <div class="ln"><b>Cartões</b><span>15 minutos de flashcards, vencidos primeiro. Os erros da sabatina da volta viram cartões novos.</span></div>
+      ${[...ERROS.values()].filter(e=>!e.revisado).length?`<div class="ln"><b>Erros</b><span>${[...ERROS.values()].filter(e=>!e.revisado).length} questões erradas esperando revisão no <a href="#erros">caderno de erros</a>.</span></div>`:""}</div>`;
+  }else if(it.tipo==="sab"&&it.id==="sab"&&!it.link&&tops.length){
+    const key="sab-"+s;
+    extra=`<div class="it-body">${(it.lines||[]).map(lineHtml).join("")}<div class="ln"><b>Temas</b><span>${tops.map(x=>esc(MAT[x.m].n+": "+x.t)).join(" · ")}</span></div></div>
+     <div class="it-actions"><button class="btn primary sm" type="button" data-mix="${s}">Fazer 10 questões mistas no Claude ↗</button><a class="btn sm" href="https://www.qconcursos.com/questoes-de-concursos/questoes" target="_blank" rel="noopener">Banco de questões reais ↗</a></div>${regHtml(s,key,"mix",10)}`;
+  }else if(it.tipo==="dom"){
+    const key="dom-"+s;const Dd=(DIAS[s]&&DIAS[s].disc)||null;const peca=s>="2027-07-01";
+    extra=`<div class="it-body">${(it.lines||[]).map(lineHtml).join("")}<div class="ln"><b>Temas</b><span>${tops.length?tops.map(x=>esc(MAT[x.m].n+": "+x.t)).join(" · "):"os da semana"}</span></div></div>
+     <div class="it-actions"><button class="btn primary sm" type="button" data-disc="${s}" ${!tops.length?"disabled":""}>${peca?"Fazer a peça no Claude ↗":"Fazer a discursiva no Claude ↗"}</button></div>
+     <div class="reg row"><span class="note">Nota da correção:</span><input class="inp" type="number" min="0" max="10" step="0.5" id="nota-${s}" value="${Dd&&Dd.nota!=null?Dd.nota:""}" style="width:84px;padding:5px 8px" aria-label="Nota"><span class="note">/10</span><button class="btn sm" type="button" data-nota="${s}">${Dd&&Dd.nota!=null?"Atualizar":"Registrar"}</button></div>`;
+  }else if(it.tipo==="bloco"){
+    const key="q-"+s;
+    extra=`<div class="it-body">${(it.lines||[]).map(lineHtml).join("")}</div>
+     <div class="it-actions">${it.quiz?`<button class="btn primary sm" type="button" data-quiz="${s}">Fazer ${it.quiz.n} questões no Claude ↗</button>`:""}${it.topic?`<label class="chk"><input type="checkbox" data-edital="${it.topic.m}-${it.topic.i}" ${PROG[it.topic.m+"-"+it.topic.i]?"checked":""}> Tópico estudado no edital</label>`:""}</div>
+     ${it.esp==="greco"?`<div class="quiz"><label class="k" for="ras-${s}">Rascunho da atividade</label><textarea class="inp" id="ras-${s}" placeholder="Cole aqui o seu texto">${esc((DIAS[s]&&DIAS[s].ras)||"")}</textarea><div class="row"><button class="btn primary sm" type="button" data-revisa="${s}">Revisar como banca no Claude ↗</button><span class="note" id="cc-${s}"></span></div></div>`:""}
+     ${it.quiz?regHtml(s,key,it.quiz.m,it.quiz.n):""}`;
+  }else{
+    extra=`<div class="it-body">${(it.lines||[]).map(lineHtml).join("")}</div>${it.link?`<div class="it-actions"><a class="btn sm" href="${it.link}" target="_blank" rel="noopener">Abrir a prova ↗</a><label class="chk">Acertos <input class="inp" type="number" min="0" max="100" id="sim-${s}" value="${(DIAS[s]&&DIAS[s].sim)||""}" style="width:70px;padding:4px 6px"></label><button class="btn sm" data-simsave="${s}" type="button">Registrar</button></div>`:""}`;
+  }
+  return `<article class="item ${done?"done":""}" style="--mc:${mc(it.m)}">
+   <div class="hr">${it.h}${it.fim?`<small>até ${it.fim}</small>`:""}</div>
+   <div><div class="it-top"><div style="min-width:0"><div class="it-tag">${esc(it.tag)}</div><div class="it-title">${esc(it.t)}</div></div>
+    <label class="chk"><input type="checkbox" data-done="${s}|${it.id}" ${done?"checked":""}> Feito</label></div>${extra}</div></article>`;
+}
+let timer={run:false,t0:0,acc:0,iv:null,dia:null};
+function bindTimer(s){
+  const tv=document.getElementById("tv");const upd=()=>{const ms=timer.acc+(timer.run?Date.now()-timer.t0:0);const m=Math.floor(ms/6e4),sec=Math.floor(ms/1e3)%60;tv.textContent=pad(m)+":"+pad(sec)};
+  clearInterval(timer.iv);timer.iv=setInterval(upd,1000);upd();
+  document.getElementById("tStart").onclick=()=>{if(!timer.run){timer.run=true;timer.t0=Date.now();timer.dia=s;upd()}};
+  document.getElementById("tPause").onclick=()=>{if(timer.run){timer.acc+=Date.now()-timer.t0;timer.run=false;upd()}};
+  document.getElementById("tSave").onclick=()=>{const ms=timer.acc+(timer.run?Date.now()-timer.t0:0);const m=Math.round(ms/6e4);if(m<1){toast("Menos de 1 minuto: nada para salvar.");return}
+    saveDia(s,c=>{c.min=(c.min||0)+m});timer={run:false,t0:0,acc:0,iv:timer.iv,dia:null};upd();toast(m+" minutos salvos em "+fmtShort(s));const el=document.getElementById("minHoje");if(el)el.textContent=(DIAS[s].min||0)+" min registrados neste dia"};
+}
+
+/* ================= render: cronograma ================= */
+let calMes=null;
+function renderCrono(){
+  const t=todayIso();if(!calMes)calMes=(t<START?START:t).slice(0,7);
+  const [Y,M]=calMes.split("-").map(Number);const first=iso(new Date(Y,M-1,1,12));const dim=new Date(Y,M,0).getDate();
+  const lead=(dow(first)+6)%7;const cells=[];for(let k=0;k<lead;k++)cells.push(addDays(first,k-lead));for(let k=0;k<dim;k++)cells.push(addDays(first,k));while(cells.length%7)cells.push(addDays(cells[cells.length-1],1));
+  const fNow=faseDe(t<START?START:t).id;
+  const prev=iso(new Date(Y,M-2,1,12)).slice(0,7), next=iso(new Date(Y,M,1,12)).slice(0,7);
+  document.getElementById("view").innerHTML=`
+  <div class="head"><div><h2>Cronograma</h2><p>Todos os dias de 02/11/2026 a 31/12/2028 já estão montados. Toque num dia para ver o que estudar, as questões e a leitura.</p></div>
+   <div class="daynav"><button class="x" type="button" data-mes="${prev}" aria-label="Mês anterior">‹</button><span class="daytitle" style="font-size:24px;min-width:9ch;text-align:center">${MESES[M-1]} ${Y}</span><button class="x" type="button" data-mes="${next}" aria-label="Próximo mês">›</button></div></div>
+  <div class="phasebar">${FASES.map(f=>`<div class="${f.id===fNow?"now":""}"><span class="k">${f.per}</span><b>${f.nome}</b><small>banca de referência: ${f.banca}</small></div>`).join("")}</div>
+  <div class="legend">${["inst","dh","const","adm","penpp","civ","eca","filo"].map(m=>`<span><i class="dotm" style="--mc:${mc(m)}"></i>${MAT[m].n}${m==="penpp"?" e Execução":m==="civ"?", Processo Civil, Difusos e Consumidor":""}</span>`).join("")}</div>
+  <div class="cal">${["seg","ter","qua","qui","sex","sáb","dom"].map(x=>`<div class="hd">${x}</div>`).join("")}
+   ${cells.map(s=>{const P=PLAN[s];const out=s.slice(0,7)!==calMes;if(!P)return `<div class="cday out"><div class="n">${D(s).getDate()}</div></div>`;
+     const its=P.items.filter(i=>["bloco","sab","dom","simulado"].includes(i.tipo)).map(i=>resolveItem(s,i));const ev=P.items.filter(i=>i.tipo==="evento"&&i.id!=="mensal");const p=pctDia(s);
+     return `<button type="button" class="cday ${out?"out":""} ${s===t?"today":""} ${P.off?"off":""}" data-go="${s}"><div class="n">${D(s).getDate()}${p===100?"<i>✓</i>":p?`<i style="color:var(--muted)">${p}%</i>`:""}</div>
+      <div class="labs">${P.off?'<span class="note" style="font-size:11px">folga</span>':its.map(i=>`<div class="lab"><i class="dotm" style="--mc:${mc(i.m)}"></i><span>${esc(i.tipo==="bloco"?i.t:i.tipo==="simulado"?"Simulado":i.tipo==="sab"?"30 questões":i.t)}</span></div>`).join("")}</div>
+      ${ev.map(e=>`<div class="ev">${esc(e.t.length>34?e.t.slice(0,32)+"…":e.t)}</div>`).join("")}</button>`}).join("")}
+  </div>`;
+}
+
+/* ================= render: questões livres ================= */
+let qSel={m:"inst",i:0,n:10,banca:"Fundep (DPE-MG)"};
+function renderQuestoes(){
+  const L=TOP[qSel.m]||[];if(qSel.i>=L.length)qSel.i=0;const t=todayIso();
+  document.getElementById("view").innerHTML=`
+  <div class="head"><div><h2>Questões</h2><p>Treino livre fora do roteiro do dia: escolha matéria, tópico e banca. O app monta o pedido e abre o Claude; depois registre o placar aqui e cole os erros no caderno.</p></div></div>
+  <section class="panel"><div class="row">
+    <select class="inp" id="qm">${Object.keys(TOP).map(m=>`<option value="${m}" ${m===qSel.m?"selected":""}>${MAT[m].n}</option>`).join("")}</select>
+    <select class="inp" id="qt" style="max-width:100%">${L.map((x,i)=>`<option value="${i}" ${i===qSel.i?"selected":""}>${esc(x[0])}</option>`).join("")}</select>
+    <select class="inp" id="qb">${["Fundep (DPE-MG)","FCC (DPE-SP)","Cebraspe (DPU)"].map(b=>`<option ${b===qSel.banca?"selected":""}>${b}</option>`).join("")}</select>
+    <select class="inp" id="qn">${[5,10,20].map(n=>`<option value="${n}" ${n===qSel.n?"selected":""}>${n} questões</option>`).join("")}</select>
+    <button class="btn primary" type="button" id="qGo">Fazer no Claude ↗</button></div>
+    ${L[qSel.i]?`<p class="note" style="margin-top:10px">Base: ${esc(L[qSel.i][1])} · foco: ${esc(L[qSel.i][2])}</p>`:""}
+    <div style="margin-top:12px">${regHtml(t,"livre-"+qSel.m+"-"+qSel.i,qSel.m,qSel.n)}</div></section>
+  <section class="panel"><h3>Provas reais para resolver</h3><p class="sub">As provas anteriores são o melhor termômetro da banca. Resolva uma por mês no simulado de sábado.</p>
+   <div class="scroll" style="margin-top:10px"><table><thead><tr><th>Prova</th><th>Onde</th></tr></thead><tbody>${PROVAS.map(p=>`<tr><td>${esc(p[0])}</td><td><a href="${p[1]}" target="_blank" rel="noopener">QConcursos ↗</a></td></tr>`).join("")}</tbody></table></div></section>`;
+  document.getElementById("qm").onchange=e=>{qSel.m=e.target.value;qSel.i=0;renderQuestoes()};
+  document.getElementById("qt").onchange=e=>{qSel.i=+e.target.value;renderQuestoes()};
+  document.getElementById("qb").onchange=e=>{qSel.banca=e.target.value};
+  document.getElementById("qn").onchange=e=>{qSel.n=+e.target.value};
+  document.getElementById("qGo").onclick=()=>{const tp=TOP[qSel.m][qSel.i];abrirClaude(PROMPT_Q({m:qSel.m,topico:tp[0],foco:tp[2],leitura:tp[1],n:qSel.n,banca:qSel.banca}))};
+}
+
+/* ================= render: erros ================= */
+let errFiltro="pend";
+const matDe=t=>{const n=String(t||"").toLowerCase();for(const k in MAT){if(MAT[k].n.toLowerCase().split(/[ ,e]+/).some(w=>w.length>4&&n.includes(w)))return k}return "fraca"};
+function renderErros(){
+  const all=[...ERROS.entries()].sort((a,b)=>String(b[1].data).localeCompare(String(a[1].data)));
+  const L=all.filter(([,e])=>errFiltro==="todos"||(errFiltro==="pend"?!e.revisado:e.revisado));
+  document.getElementById("view").innerHTML=`
+  <div class="head"><div><h2>Caderno de erros</h2><p>No fim de cada bateria, o Claude lista seus erros em linhas que começam com ERRO. Cole aqui e eles viram fichas. Revise antes de dormir e marque como revisada quando entender.</p></div>
+   <div class="row">${[["pend","A revisar"],["ok","Revisadas"],["todos","Todas"]].map(([k,l])=>`<button class="btn sm ${errFiltro===k?"primary":""}" data-ef="${k}" type="button">${l}</button>`).join("")}</div></div>
+  <section class="panel"><label class="k" for="errPaste">Colar os erros do Claude</label>
+   <textarea class="inp" id="errPaste" style="min-height:110px;margin-top:6px" placeholder="ERRO | Administrativo | confundi anulação com revogação | anulação é por ilegalidade e retroage (Súmula 473 do STF)"></textarea>
+   <div class="row" style="margin-top:8px"><button class="btn primary sm" type="button" id="errAdd">Adicionar ao caderno</button><span class="note">Também aceita uma anotação livre por linha.</span></div></section>
+  ${!L.length?`<div class="empty"><strong>${errFiltro==="pend"?"Nada para revisar":"Nada aqui ainda"}</strong>Os erros que você colar aparecem aqui.</div>`:
+  `<div class="items">${L.map(([id,e])=>`<article class="err" style="--mc:${mc(e.m)}"><div class="meta">${esc(MAT[e.m]?MAT[e.m].n:e.m)} · ${e.data?fmtShort(e.data):""}</div>
+    <div style="font-weight:600">${esc(e.enunciado)}</div>
+    ${e.correta?`<div class="expl"><b>Regra correta</b><br>${esc(e.correta)}</div>`:""}
+    <div class="row"><label class="chk"><input type="checkbox" data-err="${esc(id)}" ${e.revisado?"checked":""}> Revisada</label></div></article>`).join("")}</div>`}`;
+  document.getElementById("errAdd").onclick=async()=>{
+    const linhas=document.getElementById("errPaste").value.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+    if(!linhas.length){toast("Cole pelo menos uma linha.");return}
+    let n=0;for(const ln of linhas){const p=ln.replace(/^[-*•\d.)\s]*/,"").split("|").map(x=>x.trim());
+      let doc;if(/^erro$/i.test(p[0])&&p.length>=3)doc={m:matDe(p[1]),topico:p[1],enunciado:p[2],correta:p.slice(3).join(" | "),data:todayIso(),revisado:false};
+      else if(p.length>=3)doc={m:matDe(p[0]),topico:p[0],enunciado:p[1],correta:p.slice(2).join(" | "),data:todayIso(),revisado:false};
+      else doc={m:"fraca",topico:"",enunciado:ln,correta:"",data:todayIso(),revisado:false};
+      try{const r=await db.collection("erros").add(doc);ERROS.set(r.id,doc);n++}catch(_){}}
+    toast(n+" erro(s) adicionados.");renderErros();render();
+  };
+}
+
+/* ================= render: edital ================= */
+const EDITAL=[
+ ["inst","Princípios Institucionais","inst",["LC 80/94: princípios, funções e garantias","LC 80/94: prerrogativas e vedações","LC MG 65/2003: organização e carreira","Art. 134 da CF e EC 80/2014","Assistência jurídica, hipossuficiência e custos vulnerabilis","Curadoria especial e atuação coletiva"]],
+ ["dh","Direitos Humanos","dh",["Teoria geral e gerações","Sistema ONU e tratados","Sistema interamericano e Corte IDH","Controle de convencionalidade","Antidiscriminatório: raça, gênero, deficiência","Grupos vulneráveis e população em situação de rua"]],
+ ["const","Constitucional","const",["Teoria da Constituição e poder constituinte","Direitos fundamentais","Remédios constitucionais","Controle de constitucionalidade","Organização do Estado e dos Poderes","Funções essenciais à Justiça"]],
+ ["adm","Administrativo","adm",["Princípios e regime jurídico","Atos administrativos","Licitações (Lei 14.133/21) e contratos","Responsabilidade civil do Estado","Improbidade (Lei 8.429 reformada)","Servidores e processo administrativo"]],
+ ["pen","Penal e Criminologia","penpp",["Teoria do delito e culpabilidade","Penas e dosimetria","Crimes contra a vida e o patrimônio","Drogas (Lei 11.343)","Escolas criminológicas e seletividade","Extinção da punibilidade"]],
+ ["pp","Processo Penal","penpp",["Juiz das garantias e investigação","Provas e cadeia de custódia","Prisões e cautelares","Procedimentos e júri","Recursos e HC","Nulidades"]],
+ ["ep","Execução Penal","ep",["Regimes e progressão","Remição e detração","Faltas e disciplina","Livramento e indulto","Saídas e monitoramento","Súmulas e temas do STJ e STF"]],
+ ["civ","Civil","civ",["Parte geral e personalidade","Obrigações e contratos","Responsabilidade civil","Posse e propriedade","Família","Sucessões"]],
+ ["pc","Processo Civil","pc",["Normas fundamentais e gratuidade","Tutelas provisórias","Procedimento comum","Recursos","Precedentes e IRDR","Execução e cumprimento de sentença"]],
+ ["dif","Difusos e Coletivos","dif",["Microssistema e ACP (Lei 7.347)","Legitimidade da Defensoria","Coisa julgada coletiva","Meio ambiente e urbanístico","Moradia e regularização fundiária","Idoso e pessoa com deficiência"]],
+ ["eca","Criança e Adolescente","eca",["Doutrina da proteção integral","Medidas de proteção","Atos infracionais e medidas socioeducativas","SINASE (Lei 12.594)","Família substituta e adoção","Conselho Tutelar e rede"]],
+ ["cdc","Consumidor","cdc",["Relação de consumo","Responsabilidade pelo fato e vício","Práticas abusivas","Superendividamento (Lei 14.181)","Contratos de consumo","Defesa coletiva do consumidor"]]];
+function renderEdital(){
+  let tot=0,f=0;
+  const html=EDITAL.map(([id,nome,k,tops])=>{const n=tops.filter((_,i)=>PROG[id+"-"+i]).length;tot+=tops.length;f+=n;
+   return `<div class="mat" style="--mc:${mc(k)}"><header><h3>${nome}</h3><span class="pct">${n}/${tops.length}</span></header><div class="prog"><i style="width:${Math.round(n/tops.length*100)}%"></i></div>
+    ${tops.map((t,i)=>{const key=id+"-"+i;return `<label class="tchk ${PROG[key]?"done":""}"><input type="checkbox" data-edital="${key}" ${PROG[key]?"checked":""}><span>${esc(t)}</span></label>`}).join("")}</div>`}).join("");
+  const ext=Object.keys(TOP).map(m=>{const n=TOP[m].filter((_,i)=>PROG[m+"-"+i]).length;return n?`<span class="pill" style="color:${mc(m)}">${MAT[m].n}: ${n}/${TOP[m].length}</span>`:""}).join("");
+  document.getElementById("view").innerHTML=`
+  <div class="head"><div><h2>Edital verticalizado</h2><p>Marque um tópico só depois de resolver questões dele. Os tópicos detalhados do roteiro diário também podem ser marcados direto no dia.</p></div><div class="stat"><span class="k">Edital estudado</span><div class="v">${Math.round(f/tot*100)}%</div></div></div>
+  ${ext?`<div class="row">${ext}</div>`:""}
+  <div class="mats">${html}</div>`;
+}
+
+/* ================= render: desempenho ================= */
+function renderDesempenho(){
+  const st=statsPorMat();const ms=Object.keys(st).sort((a,b)=>st[b].f-st[a].f);
+  let F=0,A=0,MIN=0,BL=0,BLT=0;for(const m in st){F+=st[m].f;A+=st[m].a}
+  const t=todayIso();
+  for(const s in PLAN){if(s>t)break;const b=PLAN[s].items.find(i=>i.id==="bloco");if(b&&s>=START){BLT++;if(doneOf(s).bloco)BL++}if(DIAS[s]&&DIAS[s].min)MIN+=DIAS[s].min}
+  const heatDays=[];let s0=START;while(s0<=t&&s0<=END){heatDays.push(s0);s0=addDays(s0,1)}
+  const fr=fracas().slice(0,3);
+  document.getElementById("view").innerHTML=`
+  <div class="head"><div><h2>Desempenho</h2><p>Tudo o que você registra no app: questões, blocos cumpridos e minutos do cronômetro.</p></div></div>
+  <div class="grid g4">
+   <div class="panel stat"><span class="k">Questões resolvidas</span><div class="v">${F}</div><div class="s">${F?Math.round(A/F*100)+"% de acerto geral":"comece pelo bloco de hoje"}</div></div>
+   <div class="panel stat"><span class="k">Blocos cumpridos</span><div class="v">${BL}<span class="note" style="font-size:16px"> / ${BLT}</span></div><div class="s">blocos noturnos até hoje</div></div>
+   <div class="panel stat"><span class="k">Horas no cronômetro</span><div class="v">${(MIN/60).toFixed(1).replace(".",",")}</div><div class="s">registradas manualmente</div></div>
+   <div class="panel stat"><span class="k">Sequência</span><div class="v">${streak()}</div><div class="s">blocos seguidos</div></div>
+  </div>
+  <section class="panel"><h3>Acerto por matéria</h3><p class="sub">A partir de 20 questões numa matéria, ela entra no ranking de matérias fracas que o app usa na fase final.</p>
+   ${ms.length?`<div class="bars" style="margin-top:12px">${ms.map(m=>{const p=st[m].f?Math.round(st[m].a/st[m].f*100):0;return `<div class="bar" style="--mc:${mc(m)}"><span>${esc(MAT[m]?MAT[m].n:m)}</span><span class="tr"><i style="width:${p}%"></i></span><span class="n">${p}% · ${st[m].a}/${st[m].f}</span></div>`}).join("")}</div>`:`<div class="empty" style="margin-top:12px"><strong>Sem questões ainda</strong>Gere as questões do bloco do dia e responda por aqui.</div>`}
+   <p class="note" style="margin-top:12px">Prioridade atual de reforço: ${fr.map(m=>MAT[m].n).join(", ")}.</p></section>
+  <section class="panel"><h3>Constância</h3><p class="sub">Cada quadrado é um dia do plano até hoje; quanto mais escuro, mais itens cumpridos.</p>
+   <div class="heat" style="margin-top:12px">${heatDays.map(s=>{const p=pctDia(s);return `<i class="${p>=75?"l3":p>=40?"l2":p>0?"l1":""}" title="${fmtShort(s)}: ${p}%"></i>`}).join("")||'<span class="note">O plano começa em 02/11/2026.</span>'}</div></section>`;
+}
+
+/* ================= render: alvos e método ================= */
+function renderAlvos(){
+  const dist=[["Penal e Criminologia",10,"penpp"],["Processo Penal",10,"penpp"],["Execução Penal",5,"ep"],["Constitucional",10,"const"],["Direitos Humanos",10,"dh"],["Administrativo",10,"adm"],["Civil",10,"civ"],["Processo Civil",10,"pc"],["Difusos e Coletivos",10,"dif"],["Criança e Adolescente",5,"eca"],["Consumidor",5,"cdc"],["Princípios Institucionais",5,"inst"]];
+  document.getElementById("view").innerHTML=`
+  <div class="head"><div><h2>Alvos e editais</h2><p>Filtrados pelo corte de R$ 25 mil e pela sua escolha pela defesa. Valores consultados em 01/11/2026.</p></div></div>
+  <div class="alvos">
+   <article class="alvo prio"><span class="pill" style="color:var(--ok)">Prioridade 1 · sem edital</span><h3>DPE-MG · Classe Inicial</h3><span class="sal">R$ 35.877</span>
+    <dl><dt>Último</dt><dd>IX Concurso, edital 2023 (Fundep)</dd><dt>Ritmo</dt><dd>2014, 2019, 2023: o próximo deve cair em 2027–2028</dd><dt>Fases</dt><dd>Objetiva (100), duas discursivas com peça, inscrição definitiva, oral, títulos</dd><dt>Requisito</dt><dd>3 anos de atividade jurídica até a inscrição definitiva</dd></dl></article>
+   <article class="alvo"><span class="pill" style="color:var(--bad)">Inscrições até 11/11</span><h3>DPE-SP · Defensor Público</h3><span class="sal">R$ 29.716</span>
+    <dl><dt>Banca</dt><dd>FCC, 70 vagas, edital 01/2026</dd><dt>Datas</dt><dd>Objetiva 10/01/2027 · escritas 03 e 04/07/2027</dd><dt>Fases</dt><dd>Objetiva (88, corte de 44), 2 escritas com peça cível e criminal, oral, títulos</dd><dt>Extra</dt><dd>Filosofia do Direito e Sociologia Jurídica</dd></dl></article>
+   <article class="alvo"><span class="pill" style="color:var(--warn)">Regulamento publicado</span><h3>DPU · 2ª Categoria</h3><span class="sal">R$ 28.955</span>
+    <dl><dt>Status</dt><dd>Res. CSDPU 255/2026, comissão formada, 26 cargos vagos</dd><dt>Último</dt><dd>2017</dd><dt>Fases</dt><dd>Objetiva, dissertativas, sindicância, oral, títulos</dd></dl></article>
+  </div>
+  <section class="panel"><h3>Objetiva da DPE-MG em 2023: 100 questões</h3><p class="sub">O bloco criminal soma 25. As outras 75 decidem o concurso.</p>
+   <div class="bars" style="margin-top:12px">${dist.map(([n,q,m])=>`<div class="bar" style="--mc:${mc(m)}"><span>${n}</span><span class="tr"><i style="width:${q*10}%"></i></span><span class="n">${q} questões</span></div>`).join("")}</div></section>
+  <p class="note">Fora do plano por escolha sua: MPMG, MPSP, MPF e MPM (acusação). Delegado de Polícia Civil fica abaixo do corte salarial.</p>`;
+}
+function renderMetodo(){
+  document.getElementById("view").innerHTML=`
+  <div class="head"><div><h2>Método</h2><p>Como o plano funciona por dentro, para você confiar no roteiro sem precisar pensar nele todo dia.</p></div></div>
+  <div class="grid g2">
+   <section class="panel"><h3>A semana</h3><ol class="steps" style="margin-top:10px">
+    <li>Segunda a quinta, 21:15 às 22:45: bloco principal. 60 minutos de leitura com resumo, 30 de questões.</li>
+    <li>22:45: cartões e revisões que vencem no dia (1, 7 e 30 dias depois de cada bloco).</li>
+    <li>Sexta: só áudio e leitura. A noite é sua.</li>
+    <li>Sábado, 9:30: 30 questões mistas da semana. No primeiro sábado do mês, a partir de fevereiro de 2027, simulado completo.</li>
+    <li>Domingo, 17:00: escrita. Discursiva até jun/2027, peça a partir de jul/2027. Correção com espelho aqui no app.</li>
+    <li>Todo dia, 23:20: 30 páginas (20 livres e 10 do manual da fase).</li></ol></section>
+   <section class="panel"><h3>O carro</h3><ol class="steps" style="margin-top:10px">
+    <li>Belvedere até o bairro São Paulo: uns 15 km, cerca de 40 minutos por trecho. São 6h40 por semana.</li>
+    <li>Ida: escuta, primeiro a pós do Greco (as aulas têm cerca de 2h50, então cada uma ocupa 3 ou 4 trajetos), depois o Talon na ordem Execução, Indulto, Legislação Especial, Drogas, Processo Penal, Penal e Anticrime.</li>
+    <li>Ao estacionar: 60 segundos de áudio com as 3 ideias principais.</li>
+    <li>Volta: sabatina oral com o Claude no CarPlay. O comando já vem pronto em cada dia.</li></ol></section>
+   <section class="panel"><h3>Regras do jogo</h3><ol class="steps" style="margin-top:10px">
+    <li>Questão antes de teoria. Todo bloco termina com questões da banca-alvo.</li>
+    <li>Dia de audiência longe ou de saída às 20h: faça só as questões do bloco e jogue a leitura para sábado.</li>
+    <li>Nunca dois dias seguidos sem a sabatina da volta.</li>
+    <li>Primeira segunda do mês: me conte como foi, que eu ajusto o plano, a agenda e este app.</li></ol></section>
+   <section class="panel"><h3>Sem cursinho: o material</h3><ol class="steps" style="margin-top:10px">
+    ${Object.keys(MAT).filter(m=>!["fraca","filo","penpp","ep","cdc"].includes(m)).map(m=>`<li><b>${MAT[m].n}:</b> ${esc(MAT[m].man)}</li>`).join("")}
+    <li><b>Criminal:</b> lei seca, a pós do Greco, o acervo do Talon e as questões. Aqui o trabalho é jurisprudência, não teoria.</li></ol></section>
+  </div>`;
+}
+
+/* ================= roteamento ================= */
+const ROUTES={inicio:renderInicio,hoje:renderHoje,cronograma:renderCrono,questoes:renderQuestoes,erros:renderErros,edital:renderEdital,desempenho:renderDesempenho,alvos:renderAlvos,metodo:renderMetodo};
+function render(){
+  (ROUTES[route]||renderInicio)();
+  document.querySelectorAll("#nav a[data-r]").forEach(a=>a.setAttribute("aria-current",a.dataset.r===route?"page":"false"));
+  const t=todayIso();const pend=PLAN[t]?PLAN[t].items.filter(i=>!doneOf(t)[i.id]).length:0;const nb=document.getElementById("navBadge");nb.hidden=!pend;nb.textContent=pend;
+  const ne=[...ERROS.values()].filter(e=>!e.revisado).length;const eb=document.getElementById("errBadge");eb.hidden=!ne;eb.textContent=ne;
+  const dd=diffDays(START,t);document.getElementById("sideCount").textContent=dd<0?-dd:dd;document.getElementById("sideTxt").textContent=dd<0?(dd===-1?"dia para começar":"dias para começar"):"dias de plano cumpridos";
+}
+function go(r){route=ROUTES[r]?r:"inicio";render();window.scrollTo(0,0)}
+function fromHash(){const h=(location.hash||"").slice(1);go(ROUTES[h]?h:"inicio")}
+window.addEventListener("hashchange",fromHash);
+
+/* ================= eventos ================= */
+document.addEventListener("click",async e=>{
+  const g=e.target.closest("[data-go]");if(g){e.preventDefault();dia=g.dataset.go;if(route!=="hoje"){location.hash="hoje";if(route!=="hoje")go("hoje")}else renderHoje();window.scrollTo(0,0);return}
+  const ms=e.target.closest("[data-mes]");if(ms){calMes=ms.dataset.mes;renderCrono();return}
+  const cp=e.target.closest("[data-copy]");if(cp){const el=document.getElementById(cp.dataset.copy);try{await navigator.clipboard.writeText(el.textContent);toast("Comando copiado")}catch(_){const r=document.createRange();r.selectNodeContents(el);const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Texto selecionado: copie com o menu do sistema")}return}
+  const qz=e.target.closest("[data-quiz]");if(qz){const s=qz.dataset.quiz;const it=resolveItem(s,PLAN[s].items.find(i=>i.id==="bloco"));abrirClaude(PROMPT_Q(it.quiz));return}
+  const mx=e.target.closest("[data-mix]");if(mx){const s=mx.dataset.mix;abrirClaude(PROMPT_MIX(semanaTopicos(s),faseDe(s).banca));return}
+  const rg=e.target.closest("[data-reg]");if(rg){const [s,key,m]=rg.dataset.reg.split("|");const a=parseInt(document.getElementById("ra-"+key).value),f=parseInt(document.getElementById("rn-"+key).value);
+    if(isNaN(a)||isNaN(f)||a>f||f<1){toast("Informe os acertos e o total.");return}
+    const mm=m==="mix"?(semanaTopicos(s)[0]||{m:"fraca"}).m:m;
+    await saveDia(s,c=>{c.reg=c.reg||{};c.reg[key]={m:mm,f,a}});toast(`Registrado: ${a} de ${f}.`);render();return}
+  const nt=e.target.closest("[data-nota]");if(nt){const s=nt.dataset.nota;const v=parseFloat(document.getElementById("nota-"+s).value);if(isNaN(v)){toast("Informe a nota.");return}
+    await saveDia(s,c=>{c.disc=Object.assign({},c.disc,{nota:v})});toast("Nota registrada: "+v);render();return}
+  const dc=e.target.closest("[data-disc]");if(dc){const s=dc.dataset.disc;abrirClaude(PROMPT_DISC(semanaTopicos(s),s>="2027-07-01"));return}
+  const rv=e.target.closest("[data-revisa]");if(rv){const s=rv.dataset.revisa;const txt=document.getElementById("ras-"+s).value.trim();if(!txt){toast("Cole o rascunho primeiro.");return}
+    saveDia(s,c=>{c.ras=txt});abrirClaude(PROMPT_REVISA(BLOCO_ESP[s].t+": "+BLOCO_ESP[s].d,txt));return}
+  const ss=e.target.closest("[data-simsave]");if(ss){const s=ss.dataset.simsave;const v=parseInt(document.getElementById("sim-"+s).value);if(isNaN(v)){toast("Informe os acertos.");return}saveDia(s,c=>{c.sim=v;c.done=c.done||{};c.done.sab=true});toast("Simulado registrado: "+v+" acertos");renderHoje();return}
+  const ef=e.target.closest("[data-ef]");if(ef){errFiltro=ef.dataset.ef;renderErros();return}
+});
+document.addEventListener("change",async e=>{
+  const t=e.target;
+  if(t.dataset.done){const [s,id]=t.dataset.done.split("|");await saveDia(s,c=>{c.done=c.done||{};if(t.checked)c.done[id]=true;else delete c.done[id]});render();return}
+  if(t.dataset.edital){const k=t.dataset.edital;PROG[k]=t.checked;if(!t.checked)delete PROG[k];render();if(db){try{t.checked?await db.collection("progresso").doc(k).set({feito:true,em:new Date().toISOString()}):await db.collection("progresso").doc(k).delete()}catch(_){toast("Não consegui salvar a marcação.")}}return}
+  if(t.dataset.err){const id=t.dataset.err;const e0=ERROS.get(id);if(!e0||!db)return;const nv=Object.assign({},e0,{revisado:t.checked});ERROS.set(id,nv);render();try{await db.collection("erros").doc(id).set(nv)}catch(_){toast("Não consegui salvar.")}return}
+});
+document.addEventListener("input",e=>{const t=e.target;if(t.id&&t.id.startsWith("ras-")){const n=t.value.replace(/\s/g,"").length;const el=document.getElementById("cc-"+t.id.slice(4));if(el)el.textContent=n+" caracteres sem espaços"+(n<1500?" · abaixo do mínimo":n>3000?" · acima do máximo":" · dentro do limite")}});
+
+function renderConta(){
+  if(!db)return;
+  const html=`<span>${db.mode==="firebase"?"Conta: "+esc(db.user.email||db.user.displayName||"você"):"Modo local"}</span>
+   <button type="button" class="btn sm ghost" data-bkp>Baixar backup</button>${db.mode==="firebase"?'<button type="button" class="btn sm ghost" data-sair>Sair</button>':""}`;
+  for(const id of ["conta","conta2"]){const f=document.getElementById(id);if(f)f.innerHTML=html}
+}
+document.addEventListener("click",e=>{
+  if(e.target.closest("[data-bkp]")){const data={dias:DIAS,erros:Object.fromEntries(ERROS),progresso:PROG,exportado:new Date().toISOString()};
+    const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,1)],{type:"application/json"}));a.download="autos-defensoria-"+todayIso()+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
+  if(e.target.closest("[data-sair]"))db.signOut();
+});
+
+/* ================= boot ================= */
+fromHash();
+(async()=>{
+  let dbx=null;try{dbx=await openStore("cronograma")}catch(e){console.error(e)}
+  if(!dbx){dbState="Não consegui abrir o armazenamento. Recarregue o app.";render();return}
+  db=dbx;dbState="Carregando seu progresso…";renderConta();
+  const timer=setTimeout(()=>{dbState="O progresso salvo ainda não carregou. Ele aparece assim que a conexão voltar.";if(route==="inicio")render()},10000);
+  let first=true;
+  db.collection("dias").limit(1000).onSnapshot(s=>{if(!s.metadata||!s.metadata.fromCache){clearTimeout(timer);dbState=db.mode==="firebase"?"Progresso salvo e sincronizado entre celular e computador.":"Modo local: o progresso fica salvo só neste aparelho."}
+    for(const ch of s.docChanges()){if(ch.type==="removed")delete DIAS[ch.doc.id];else if(!pend[ch.doc.id])DIAS[ch.doc.id]=ch.doc.data()}
+    first=false;const ae=document.activeElement;if(ae&&(ae.tagName==="TEXTAREA"||ae.tagName==="INPUT"&&ae.type!=="checkbox"))return;render()},()=>{clearTimeout(timer);dbState="Não foi possível ler o progresso salvo agora.";render()});
+  db.collection("erros").limit(1000).onSnapshot(s=>{ERROS.clear();s.docs.forEach(d=>{if(d.exists)ERROS.set(d.id,d.data())});if(route==="erros"||route==="inicio")render()},()=>{});
+  db.collection("progresso").limit(1000).onSnapshot(s=>{Object.keys(PROG).forEach(k=>delete PROG[k]);s.docs.forEach(d=>{if(d.exists)PROG[d.id]=true});if(["edital","hoje"].includes(route))render()},()=>{});
+})();
+</script>
+</body>
+</html>

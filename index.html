@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#13201A">
+<title>Apps D'Ávila</title>
+<link rel="icon" href="./cronograma/icons/icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,700;1,6..96,500&family=Hanken+Grotesk:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{--paper:#F1F3EE;--card:#FAFBF7;--ink:#17201B;--muted:#5D6962;--rule:#D6DCD4;--accent:#1D5A43;--brass:#946E1F}
+@media (prefers-color-scheme:dark){:root{--paper:#0E1411;--card:#151D19;--ink:#E3E8E1;--muted:#97A49B;--rule:#27322C;--accent:#67BE96;--brass:#D4AC57;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font:16px/1.5 "Hanken Grotesk",system-ui,sans-serif;display:grid;place-items:center;padding:32px max(16px,env(safe-area-inset-left,0px))}
+main{max-width:640px;width:100%;display:flex;flex-direction:column;gap:22px}
+.ex{font:500 11px "IBM Plex Mono",monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--brass)}
+h1{font:700 clamp(36px,8vw,56px)/1 "Bodoni Moda",Georgia,serif;margin:6px 0 0}h1 em{font-style:italic;font-weight:500;color:var(--accent)}
+.apps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+a.app{display:flex;gap:14px;align-items:center;padding:16px;border:1px solid var(--rule);border-radius:14px;background:var(--card);color:inherit;text-decoration:none}
+a.app:hover{border-color:var(--accent)}a.app img{width:64px;height:64px;border-radius:14px}
+a.app b{display:block;font-size:18px}a.app span{color:var(--muted);font-size:14px}
+.tip{color:var(--muted);font-size:14px;border-top:1px solid var(--rule);padding-top:14px}
+</style>
+</head>
+<body><main>
+<div><div class="ex">João Pedro Reis D'Ávila</div><h1>Apps <em>D'Ávila</em></h1></div>
+<div class="apps">
+ <a class="app" href="./cronograma/"><img src="./cronograma/icons/icon-192.png" alt=""><div><b>Autos da Defensoria</b><span>Cronograma de estudos</span></div></a>
+ <a class="app" href="./biblioteca/"><img src="./biblioteca/icons/icon-192.png" alt=""><div><b>Biblioteca D'Ávila</b><span>Acervo e leitura diária</span></div></a>
+</div>
+<p class="tip">Para instalar: abra cada app e use “Adicionar à Tela de Início” (iPhone, no Safari, pelo botão Compartilhar) ou “Instalar app” (Android e Chrome no computador).</p>
+</main></body></html>
