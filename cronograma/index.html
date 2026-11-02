@@ -576,8 +576,13 @@ const PROVAS=[
  ["DPU 2017 · Cebraspe","https://www.qconcursos.com/questoes-de-concursos/provas"],
  ["DPE-MG 2014 · Fundep","https://www.qconcursos.com/questoes-de-concursos/provas"]];
 
-const OFF=new Set(["2026-12-24","2026-12-25","2026-12-31","2027-01-01","2027-02-08","2027-02-09","2027-12-24","2027-12-25","2027-12-31","2028-01-01","2028-02-28","2028-02-29","2028-12-24","2028-12-25"]);
+const OFF=new Set(["2026-11-12","2026-11-23","2026-11-21","2026-11-22","2026-12-24","2026-12-25","2026-12-31","2027-01-01","2027-02-08","2027-02-09","2027-12-24","2027-12-25","2027-12-31","2028-01-01","2028-02-28","2028-02-29","2028-12-24","2028-12-25"]);
+/* semanas de júri: bloco vira só questões, sem tópico novo */
+const LEVE=new Set(["2026-11-16","2026-11-17","2026-11-18","2026-11-19"]);
 const EVENTOS={
+ "2026-11-12":[{h:"19:30",t:"Aniversário da mãe · jantar em família",d:"Sem estudo e sem treino hoje. A matéria de quinta passa para a semana seguinte."}],
+ "2026-11-16":[{h:"—",t:"Semana do júri: estudo reduzido",d:"Júri Chacina de Neves em 23/11. À noite, só 15 questões de revisão, sem tópico novo. Sábado e domingo (21 e 22) ficam livres para o júri."}],
+ "2026-11-23":[{h:"—",t:"Júri Chacina de Neves",d:"Dia de júri: nenhum estudo programado."}],
  "2026-11-09":[{h:"12:30",t:"Decidir e pagar a inscrição na DPE-SP",d:"Prazo: 11/11 às 23h59; boleto até 12/11. Taxa de R$ 250, no site da FCC. A ideia é usar a objetiva como diagnóstico real."}],
  "2026-11-30":[{h:"12:30",t:"Prazo da Atividade Avaliativa 1 da pós Greco",d:"Anexar na plataforma Hotscool. Nome do arquivo no padrão da plataforma: Joao-Davila_Atividade4."}],
  "2026-12-29":[{h:"12:30",t:"Enviar a Atividade Avaliativa 2 da pós Greco",d:"Prazo final 31/12. Nome do arquivo: Joao-Davila_Atividade7."}],
@@ -599,19 +604,23 @@ const PLAN={};
   const cnt={}; let ai=0; let d=START;
   while(d<=END){
     const wd=dow(d), w=Math.floor(diffDays(START,d)/7), f=faseDe(d), items=[];
-    const off=OFF.has(d);
+    const off=OFF.has(d);const offNoite=d==="2026-11-12";
     const eventos=EVENTOS[d]||[];
     const semanaSP=d>="2027-01-04"&&d<="2027-01-08";
-    if(wd>=1&&wd<=5&&!off){
+    if(wd>=1&&wd<=5&&(!off||offNoite)){
       const a=AUDIO_SEQ[Math.min(ai,AUDIO_SEQ.length-1)]; ai++;
       items.push({id:"ida",h:"08:35",fim:"09:15",tipo:"audio",m:"inst",tag:"Ida · escuta",t:a.r,
         lines:[["Aula",a.trs>1?`aula pendente ${a.aula} de ${a.de} · trajeto ${a.tr} de ${a.trs}`:`aula ${a.aula} de ${a.de} (a próxima ainda não assistida)`],["Como","1,25x, sem trocar de aula no meio. Ao estacionar, grave 60 segundos com as 3 ideias principais."]],audio:a});
     }
     eventos.forEach((e,i)=>items.push({id:"ev"+i,h:e.h,tipo:"evento",m:"pen",tag:"Prazo e compromisso",t:e.t,lines:[["Detalhe",e.d]]}));
-    if(wd>=1&&wd<=5&&!off){
+    if(wd>=1&&wd<=5&&(!off||offNoite)){
       items.push({id:"volta",h:"18:00",fim:"18:40",tipo:"volta",m:"inst",tag:"Volta · interrogatório",t:"Sabatina oral com o Claude no CarPlay"});
     }
-    if(wd>=1&&wd<=4&&!off&&d!=="2027-01-10"){
+    if(wd>=1&&wd<=4&&!off&&LEVE.has(d)){
+      const m=slotMat(f.id,wd,w);
+      items.push({id:"bloco",h:"21:15",fim:"22:00",tipo:"bloco",m,tag:"Semana do júri · estudo reduzido",t:"15 questões de revisão: "+MAT[m].n,lines:[["Como","Só questões dos tópicos já estudados, sem teoria nova. Se o dia do escritório foi pesado, pode pular sem culpa."]],quiz:{m,topico:"revisão dos tópicos já estudados",foco:"pontos mais cobrados",leitura:"",n:15,banca:f.banca}});
+    }
+    if(wd>=1&&wd<=4&&!off&&!LEVE.has(d)&&d!=="2027-01-10"){
       let it;
       if(BLOCO_ESP[d]){const b=BLOCO_ESP[d];it={id:"bloco",h:"21:15",fim:"22:45",tipo:"bloco",m:b.m,tag:"Bloco principal · pós",t:b.t,lines:[["Tarefa",b.d],["Apoio","Escreva o rascunho e cole aqui embaixo para eu revisar como banca antes do envio."]],esp:"greco"}}
       else{
